@@ -1,15 +1,16 @@
 package com.library.system.service;
 
-import com.library.system.entity.BorrowRecord;
-import com.library.system.entity.Book;
-import com.library.system.mapper.BorrowMapper;
-import com.library.system.mapper.BookMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.library.system.entity.Book;
+import com.library.system.entity.BorrowRecord;
+import com.library.system.mapper.BookMapper;
+import com.library.system.mapper.BorrowMapper;
 
 @Service
 public class BorrowService {
@@ -47,7 +48,9 @@ public class BorrowService {
         record.setBookId(bookId);
         record.setBorrowDate(LocalDateTime.now().format(fmt));
         record.setStatus("borrowed");
+        System.out.println("BorrowService.borrowBook - inserting record: " + record);
         borrowMapper.insert(record);
+        System.out.println("BorrowService.borrowBook - after insert, id=" + record.getId());
     }
 
     public void returnBook(Integer recordId) {

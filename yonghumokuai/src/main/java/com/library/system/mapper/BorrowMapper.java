@@ -1,13 +1,15 @@
 package com.library.system.mapper;
 
-import com.library.system.entity.BorrowRecord;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Update;
-import org.apache.ibatis.annotations.Delete;
-
 import java.util.List;
+
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
+import com.library.system.entity.BorrowRecord;
 
 @Mapper
 public interface BorrowMapper {
@@ -21,6 +23,7 @@ public interface BorrowMapper {
     List<BorrowRecord> findByUserId(Integer userId);
 
     @Insert("INSERT INTO borrow_record (user_id, book_id, borrow_date, return_date, status) VALUES (#{userId}, #{bookId}, #{borrowDate}, #{returnDate}, #{status})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insert(BorrowRecord record);
 
     @Update("UPDATE borrow_record SET return_date = #{returnDate}, status = #{status} WHERE id = #{id}")

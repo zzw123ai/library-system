@@ -34,4 +34,11 @@ public interface UserMapper {
 
     @Delete("DELETE FROM \"user\" WHERE id = #{id}")
     void delete(@Param("id") Integer id);
+
+    @Select("<script>" +
+            "SELECT * FROM \"user\" WHERE 1=1" +
+            "<if test='username != null and username != \"\"'> AND username LIKE CONCAT('%', #{username}, '%')</if>" +
+            "<if test='role != null and role != \"\"'> AND role = #{role}</if>" +
+            "</script>")
+    List<User> search(@Param("username") String username, @Param("role") String role);
 }

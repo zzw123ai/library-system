@@ -55,4 +55,16 @@ public class BorrowRecord {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "BorrowRecord{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", bookId=" + bookId +
+                ", borrowDate='" + borrowDate + '\'' +
+                ", returnDate='" + returnDate + '\'' +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

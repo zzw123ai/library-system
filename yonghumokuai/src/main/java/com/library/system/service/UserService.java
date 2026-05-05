@@ -1,77 +1,12 @@
-package com.library.system.controller;
-
-import com.library.system.entity.User;
-import com.library.system.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
-@RestController
-@RequestMapping("/api/user")
-@CrossOrigin // 允许前端跨域访问
-public class UserController {
-
-    @Autowired
-    private UserService userService;
-
-    @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody User loginRequest) {
-        Map<String, Object> result = new HashMap<>();
-        User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
-
-        if (user != null) {
-            result.put("code", 200);
-            result.put("message", "登录成功");
-            result.put("data", user);
-        } else {
-            result.put("code", 401);
-            result.put("message", "用户名或密码错误");
-        }
-        return result;
-    }
-}
-package com.library.system.controller;
-
-import com.library.system.entity.User;
-import com.library.system.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
-@RestController
-@RequestMapping("/api/user")
-@CrossOrigin // 允许前端跨域访问
-public class UserController {
-
-    @Autowired
-    private UserService userService;
-
-    @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody User loginRequest) {
-        Map<String, Object> result = new HashMap<>();
-        User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
-
-        if (user != null) {
-            result.put("code", 200);
-            result.put("message", "登录成功");
-            result.put("data", user);
-        } else {
-            result.put("code", 401);
-            result.put("message", "用户名或密码错误");
-        }
-        return result;
-    }
-}
 package com.library.system.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.library.system.entity.User;
 import com.library.system.mapper.UserMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
@@ -91,5 +26,25 @@ public class UserService {
             return user;
         }
         return null;
+    }
+
+    public List<User> findAll() {
+        return userMapper.findAll();
+    }
+
+    public User findById(Integer id) {
+        return userMapper.findById(id);
+    }
+
+    public void insert(User user) {
+        userMapper.insert(user);
+    }
+
+    public void update(User user) {
+        userMapper.update(user);
+    }
+
+    public void delete(Integer id) {
+        userMapper.delete(id);
     }
 }

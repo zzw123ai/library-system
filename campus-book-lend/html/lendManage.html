@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>借阅管理 - 校园图书借阅系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="nav">
+    <a href="#">首页</a>
+    <a href="lendManage.html" class="active">借阅管理</a>
+    <a href="personal.html">个人中心</a>
+    <a href="#">退出登录</a>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <a href="#" class="active">图书借阅</a>
+        <a href="#">热门图书</a>
+        <a href="#">借阅规则</a>
+    </div>
+    <div class="main">
+        <h3>图书借阅管理</h3>
+        <div style="margin:20px 0;">
+            <input type="text" placeholder="书名/作者搜索" style="padding:8px;width:300px;">
+            <select style="padding:8px;margin-left:10px;">
+                <option>全部分类</option>
+                <option>文学小说</option>
+                <option>计算机科技</option>
+                <option>教辅教材</option>
+            </select>
+            <button style="margin-left:10px;padding:8px 20px;">搜索</button>
+        </div>
+        <table>
+            <tr>
+                <th>书名</th>
+                <th>作者</th>
+                <th>分类</th>
+                <th>剩余库存</th>
+                <th>操作</th>
+            </tr>
+            <tr>
+                <td>计算机网络基础</td>
+                <td>张三</td>
+                <td>计算机科技</td>
+                <td>8</td>
+                <td><button>立即借阅</button></td>
+            </tr>
+            <tr>
+                <td>现代汉语</td>
+                <td>李四</td>
+                <td>文学小说</td>
+                <td>3</td>
+                <td><button>立即借阅</button></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

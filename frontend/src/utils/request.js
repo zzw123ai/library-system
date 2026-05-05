@@ -5,11 +5,20 @@
  */
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import { getToken } from './auth.js'
 
 const request = axios.create({
   // 默认指向本地 Spring Boot；若使用 Vite 代理可改为 '/api' 并在 vite.config 里配置 proxy
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
   timeout: 15000,
+})
+
+request.interceptors.request.use((config) => {
+  const token = getToken()
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
 })
 
 request.interceptors.response.use(

@@ -11,7 +11,8 @@
         class="search-input"
         @input="loadBooks"
       />
-      <button class="add-btn" @click="showAddModal = true">添加图书</button>
+      <!-- 只有管理员可以添加图书 -->
+      <button v-if="isAdmin" class="add-btn" @click="showAddModal = true">添加图书</button>
     </div>
 
     <!-- 图书列表 -->
@@ -24,7 +25,7 @@
           <th>作者</th>
           <th>出版社</th>
           <th>库存</th>
-          <th>操作</th>
+          <th v-if="isAdmin">操作</th>
         </tr>
       </thead>
       <tbody>
@@ -35,7 +36,7 @@
           <td>{{ book.author }}</td>
           <td>{{ book.publisher }}</td>
           <td>{{ book.available }}</td>
-          <td>
+          <td v-if="isAdmin">
             <button class="edit-btn" @click="editBook(book)">编辑</button>
             <button class="delete-btn" @click="deleteBook(book.id)">删除</button>
           </td>
@@ -79,10 +80,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { getBooks, addBook, updateBook, deleteBook as apiDeleteBook } from '../api/book'
+import { isAdmin as checkAdmin } from '../utils/auth'
 
 const books = ref([])
+const isAdmin = computed(() => checkAdmin())
 const searchKeyword = ref('')
 const showAddModal = ref(false)
 const isEdit = ref(false)

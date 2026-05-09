@@ -18,7 +18,7 @@ export function addBorrow(data) {
   return request({
     url: '/api/borrow/borrow',
     method: 'post',
-    params: { userId: data.userId, bookId: data.bookId },
+    params: { userId: data.userId, bookId: data.bookId, dueDate: data.dueDate },
   })
 }
 

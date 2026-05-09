@@ -7,7 +7,7 @@ echo.
 
 REM 启动后端服务
 echo [1/2] 正在启动后端服务 (Spring Boot)...
-cd /d "%~dp0yonghumokuai"
+cd /d "%~dp0Backend"
 start "Backend-SpringBoot" cmd /k "mvn spring-boot:run"
 
 echo 等待后端启动 (约10秒)...

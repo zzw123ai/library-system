@@ -35,6 +35,12 @@ public class UserService {
     }
 
     public void insert(User user) {
+        if ("1".equals(user.getRole())) {
+            List<User> admins = userMapper.findByRole("1");
+            if (!admins.isEmpty()) {
+                throw new IllegalStateException("系统中只能有一个管理员");
+            }
+        }
         userMapper.insert(user);
     }
 

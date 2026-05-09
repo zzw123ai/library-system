@@ -34,9 +34,9 @@ public class BorrowController {
     }
 
     @PostMapping("/borrow")
-    public Result<String> borrow(@RequestParam Integer userId, @RequestParam Integer bookId) {
+    public Result<String> borrow(@RequestParam Integer userId, @RequestParam Integer bookId, @RequestParam String dueDate) {
         try {
-            borrowService.borrowBook(userId, bookId);
+            borrowService.borrowBook(userId, bookId, dueDate);
             return Result.success("借阅成功");
         } catch (IllegalStateException e) {
             return Result.error(400, e.getMessage());

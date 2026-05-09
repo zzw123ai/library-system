@@ -22,7 +22,7 @@ public interface BorrowMapper {
     @Select("SELECT * FROM borrow_record WHERE user_id = #{userId}")
     List<BorrowRecord> findByUserId(Integer userId);
 
-    @Insert("INSERT INTO borrow_record (user_id, book_id, borrow_date, return_date, status) VALUES (#{userId}, #{bookId}, #{borrowDate}, #{returnDate}, #{status})")
+    @Insert("INSERT INTO borrow_record (user_id, book_id, borrow_date, due_date, return_date, status) VALUES (#{userId}, #{bookId}, #{borrowDate}, #{dueDate}, #{returnDate}, #{status})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insert(BorrowRecord record);
 

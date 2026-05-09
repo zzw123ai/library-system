@@ -9,19 +9,27 @@
           <span class="icon">🏠</span>
           <span>首页</span>
         </router-link>
-        <router-link to="/users" class="menu-item" :class="{ active: $route.path === '/users' }">
+        <!-- 管理员可见：用户管理 -->
+        <router-link v-if="isAdmin" to="/users" class="menu-item" :class="{ active: $route.path === '/users' }">
           <span class="icon">👥</span>
           <span>用户管理</span>
         </router-link>
+        <!-- 所有用户可见：图书管理 -->
         <router-link to="/books" class="menu-item" :class="{ active: $route.path === '/books' }">
           <span class="icon">📚</span>
           <span>图书管理</span>
         </router-link>
+        <!-- 所有用户可见：借阅管理 -->
         <router-link to="/borrows" class="menu-item" :class="{ active: $route.path === '/borrows' }">
           <span class="icon">📖</span>
           <span>借阅管理</span>
         </router-link>
       </nav>
+      <!-- 当前用户信息 -->
+      <div class="user-info">
+        <span class="username">{{ currentUser?.username }}</span>
+        <span class="role">{{ isAdmin ? '管理员' : '普通用户' }}</span>
+      </div>
     </div>
     <div class="main-content">
       <header class="header">
@@ -67,6 +75,26 @@ const userCount = ref(0)
 const bookCount = ref(0)
 const borrowCount = ref(0)
 
+// 当前用户信息
+const currentUser = ref(null)
+
+// 判断是否是管理员（role=1 表示管理员）
+const isAdmin = computed(() => {
+  return currentUser.value?.role === '1' || currentUser.value?.role === 1
+})
+
+// 从 localStorage 获取用户信息
+const loadCurrentUser = () => {
+  try {
+    const userInfo = localStorage.getItem('userInfo')
+    if (userInfo) {
+      currentUser.value = JSON.parse(userInfo)
+    }
+  } catch (e) {
+    console.error('Failed to load user info:', e)
+  }
+}
+
 const currentTitle = computed(() => {
   const titles = {
     '/': '首页',
@@ -79,6 +107,8 @@ const currentTitle = computed(() => {
 
 const handleLogout = () => {
   localStorage.removeItem('token')
+  localStorage.removeItem('userInfo')
+  currentUser.value = null
   alert('退出成功')
   router.push('/login')
 }
@@ -101,6 +131,7 @@ const loadStats = async () => {
 }
 
 onMounted(() => {
+  loadCurrentUser()
   loadStats()
 })
 </script>
@@ -165,6 +196,29 @@ onMounted(() => {
 .icon {
   margin-right: 12px;
   font-size: 20px;
+}
+
+.user-info {
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.user-info .username {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #e2e8f0;
+  margin-bottom: 4px;
+}
+
+.user-info .role {
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 20px;
+  background: rgba(66, 153, 225, 0.2);
+  color: #4299e1;
 }
 
 .main-content {

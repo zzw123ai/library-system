@@ -77,7 +77,8 @@ class BorrowControllerTest {
 
         mockMvc.perform(post("/api/borrow/borrow")
                         .param("userId", String.valueOf(user.getId()))
-                        .param("bookId", String.valueOf(book.getId())))
+                        .param("bookId", String.valueOf(book.getId()))
+                        .param("dueDate", "2026-12-31"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("借阅成功"));
@@ -103,7 +104,8 @@ class BorrowControllerTest {
 
         mockMvc.perform(post("/api/borrow/borrow")
                         .param("userId", String.valueOf(user.getId()))
-                        .param("bookId", String.valueOf(book.getId())))
+                        .param("bookId", String.valueOf(book.getId()))
+                        .param("dueDate", "2026-12-31"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(400))
                 .andExpect(jsonPath("$.message").value("图书不可借"));
@@ -129,7 +131,8 @@ class BorrowControllerTest {
 
         mockMvc.perform(post("/api/borrow/borrow")
                         .param("userId", String.valueOf(user.getId()))
-                        .param("bookId", String.valueOf(book.getId())))
+                        .param("bookId", String.valueOf(book.getId()))
+                        .param("dueDate", "2026-12-31"))
                 .andExpect(status().isOk());
 
         Integer recordId = borrowService.findByUserId(user.getId()).get(0).getId();
@@ -170,7 +173,8 @@ class BorrowControllerTest {
 
         mockMvc.perform(post("/api/borrow/borrow")
                         .param("userId", String.valueOf(user.getId()))
-                        .param("bookId", String.valueOf(book.getId())))
+                        .param("bookId", String.valueOf(book.getId()))
+                        .param("dueDate", "2026-12-31"))
                 .andExpect(status().isOk());
 
         Integer recordId = borrowService.findByUserId(user.getId()).get(0).getId();

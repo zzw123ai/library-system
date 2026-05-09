@@ -5,6 +5,7 @@ com\library\system\LibrarySystemApplication.class
 com\library\system\controller\BorrowController.class
 com\library\system\entity\Book.class
 com\library\system\entity\User.class
+com\library\system\controller\MigrationController.class
 com\library\system\service\UserService.class
 com\library\system\mapper\BookMapper.class
 com\library\system\service\BookService.class

@@ -68,7 +68,7 @@ public class BorrowService {
         }
     }
 
-    public void borrowBook(Integer userId, Integer bookId) {
+    public void borrowBook(Integer userId, Integer bookId, String dueDate) {
         Book book = bookMapper.findById(bookId);
         if (book == null || book.getAvailable() == null || book.getAvailable() <= 0) {
             throw new IllegalStateException("图书不可借");
@@ -80,6 +80,7 @@ public class BorrowService {
         record.setUserId(userId);
         record.setBookId(bookId);
         record.setBorrowDate(LocalDateTime.now().format(fmt));
+        record.setDueDate(dueDate);
         record.setStatus("BORROWED");
         borrowMapper.insert(record);
     }

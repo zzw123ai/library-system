@@ -76,7 +76,7 @@ class BorrowServiceTest {
         book.setAvailable(3);
         bookService.insert(book);
         
-        borrowService.borrowBook(user.getId(), book.getId());
+        borrowService.borrowBook(user.getId(), book.getId(), "2026-12-31");
         
         Book borrowedBook = bookService.findById(book.getId());
         assertEquals(2, borrowedBook.getAvailable());
@@ -106,7 +106,7 @@ class BorrowServiceTest {
         bookService.insert(book);
         
         assertThrows(IllegalStateException.class, () -> {
-            borrowService.borrowBook(user.getId(), book.getId());
+            borrowService.borrowBook(user.getId(), book.getId(), "2026-12-31");
         });
     }
 
@@ -128,7 +128,7 @@ class BorrowServiceTest {
         book.setAvailable(3);
         bookService.insert(book);
         
-        borrowService.borrowBook(user.getId(), book.getId());
+        borrowService.borrowBook(user.getId(), book.getId(), "2026-12-31");
         
         BorrowRecord record = borrowService.findByUserId(user.getId()).get(0);
         
@@ -168,7 +168,7 @@ class BorrowServiceTest {
         book.setAvailable(3);
         bookService.insert(book);
         
-        borrowService.borrowBook(user.getId(), book.getId());
+        borrowService.borrowBook(user.getId(), book.getId(), "2026-12-31");
         
         BorrowRecord record = borrowService.findByUserId(user.getId()).get(0);
         assertNotNull(record);

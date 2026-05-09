@@ -11,7 +11,8 @@
         class="search-input"
         @input="loadBorrows"
       />
-      <button class="add-btn" @click="showAddModal = true">添加借阅</button>
+      <!-- 所有用户都可以借书 -->
+      <button class="add-btn" @click="addBorrowHandler">添加借阅</button>
     </div>
 
     <!-- 借阅列表 -->
@@ -29,7 +30,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="borrow in borrows" :key="borrow.id">
+        <tr v-for="borrow in filteredBorrows" :key="borrow.id">
           <td>{{ borrow.id }}</td>
           <td>{{ borrow.bookTitle }}</td>
           <td>{{ borrow.username }}</td>
@@ -40,14 +41,16 @@
             <span :class="getStatusClass(borrow.status)">{{ getStatusText(borrow.status) }}</span>
           </td>
           <td>
+            <!-- 管理员可以归还任何书籍，普通用户只能归还自己借的书 -->
             <button 
-              v-if="borrow.status === 'BORROWED'" 
+              v-if="borrow.status === 'BORROWED' && (isAdmin || borrow.userId === currentUserId)" 
               class="return-btn" 
               @click="returnBook(borrow.id)"
             >
               归还
             </button>
-            <button class="delete-btn" @click="deleteBorrow(borrow.id)">删除</button>
+            <!-- 只有管理员可以删除借阅记录 -->
+            <button v-if="isAdmin" class="delete-btn" @click="deleteBorrow(borrow.id)">删除</button>
           </td>
         </tr>
       </tbody>
@@ -67,7 +70,8 @@
               </option>
             </select>
           </div>
-          <div class="form-group">
+          <!-- 管理员可以选择用户，普通用户只能为自己借书 -->
+          <div v-if="isAdmin" class="form-group">
             <label>选择用户</label>
             <select v-model="formData.userId" required>
               <option value="">请选择用户</option>
@@ -75,6 +79,10 @@
                 {{ user.username }}
               </option>
             </select>
+          </div>
+          <div v-else class="form-group">
+            <label>借阅人</label>
+            <div class="readonly-value">当前用户</div>
           </div>
           <div class="form-group">
             <label>借阅日期</label>
@@ -95,13 +103,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { getBorrows, addBorrow, returnBorrow, deleteBorrow as apiDeleteBorrow } from '../api/borrow'
 import { getBooks } from '../api/book'
 import { getUsers } from '../api/user'
+import { isAdmin as checkAdmin, getCurrentUserId } from '../utils/auth'
 
 const borrows = ref([])
+const isAdmin = computed(() => checkAdmin())
+const currentUserId = computed(() => getCurrentUserId())
 const searchKeyword = ref('')
+
+// 过滤借阅记录：管理员看到所有，普通用户只看到自己的
+const filteredBorrows = computed(() => {
+  if (isAdmin.value) {
+    return borrows.value
+  }
+  return borrows.value.filter(borrow => borrow.userId === currentUserId.value)
+})
 const showAddModal = ref(false)
 const availableBooks = ref([])
 const users = ref([])
@@ -133,7 +152,8 @@ const addBorrowHandler = async () => {
   await loadBooksAndUsers()
   formData.value = {
     bookId: null,
-    userId: null,
+    // 普通用户默认选择自己，管理员需要选择用户
+    userId: isAdmin.value ? null : currentUserId.value,
     borrowDate: new Date().toISOString().split('T')[0],
     dueDate: ''
   }
@@ -465,6 +485,17 @@ h2 {
   outline: none;
   border-color: #4299e1;
   box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.readonly-value {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #f7fafc;
+  color: #718096;
+  box-sizing: border-box;
 }
 
 .modal-actions {

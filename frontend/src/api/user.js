@@ -1,18 +1,47 @@
-/**
- * 用户相关接口（登录模块使用）
- * 后端示例：POST /api/user/login，请求体 { username, password }
- */
 import request from '../utils/request.js'
 
-/**
- * 登录
- * @param {{ username: string; password: string }} payload
- * @returns {Promise<import('axios').AxiosResponse>}
- */
 export function login(payload) {
   return request({
     url: '/api/user/login',
     method: 'post',
     data: payload,
+  })
+}
+
+export function getUsers(keyword) {
+  return request({
+    url: keyword ? '/api/user/search' : '/api/user/list',
+    method: 'get',
+    params: keyword ? { username: keyword } : {},
+  })
+}
+
+export function getUserById(id) {
+  return request({
+    url: `/api/user/find/${id}`,
+    method: 'get',
+  })
+}
+
+export function addUser(data) {
+  return request({
+    url: '/api/user/add',
+    method: 'post',
+    data,
+  })
+}
+
+export function updateUser(data) {
+  return request({
+    url: '/api/user/update',
+    method: 'put',
+    data,
+  })
+}
+
+export function deleteUser(id) {
+  return request({
+    url: `/api/user/delete/${id}`,
+    method: 'delete',
   })
 }

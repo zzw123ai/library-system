@@ -2,13 +2,17 @@
   <router-view />
 </template>
 
-<script setup></script>
+<script setup>
+</script>
 
 <style>
-html,
-body,
-#app {
+* {
   margin: 0;
-  height: 100%;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 </style>

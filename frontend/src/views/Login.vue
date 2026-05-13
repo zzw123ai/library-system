@@ -63,6 +63,7 @@ import { login as loginApi } from '../api/user.js'
 
 /** localStorage 中存放 Token 的键名（可按团队规范修改） */
 const TOKEN_KEY = 'token'
+const USER_INFO_KEY = 'userInfo'
 
 const router = useRouter()
 const formRef = ref()
@@ -98,14 +99,13 @@ async function handleLogin() {
   loading.value = true
   try {
     const res = await loginApi({
-      username: form.username.trim(),
-      password: form.password,
-    })
+        username: form.username.trim(),
+        password: form.password,
+      })
 
-    const body = res.data || {}
-    const { code, message, data } = body
+      const { code, message, data } = res.data
 
-    if (code === 200) {
+      if (code === 200) {
       const token = pickToken(data)
       if (token) {
         localStorage.setItem(TOKEN_KEY, token)
@@ -114,6 +114,11 @@ async function handleLogin() {
         ElMessage.warning(
           '登录成功，但响应中未找到 token/accessToken 字段，请后端在登录成功 data 中返回 Token 后再写入 localStorage'
         )
+      }
+      
+      // 保存用户信息到 localStorage
+      if (data && typeof data === 'object') {
+        localStorage.setItem(USER_INFO_KEY, JSON.stringify(data))
       }
 
       ElMessage.success(message || '登录成功')

@@ -7,8 +7,7 @@ import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
 const request = axios.create({
-  // 默认指向本地 Spring Boot；若使用 Vite 代理可改为 '/api' 并在 vite.config 里配置 proxy
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '',
   timeout: 15000,
 })
 

@@ -6,20 +6,35 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: Login,
-    meta: { title: '登录' },
+    component: Login
   },
   {
     path: '/',
     name: 'Home',
     component: Home,
-    meta: { title: '首页' },
-  },
+    children: [
+      {
+        path: 'users',
+        name: 'UserManage',
+        component: () => import('../views/UserManage.vue')
+      },
+      {
+        path: 'books',
+        name: 'BookManage',
+        component: () => import('../views/BookManage.vue')
+      },
+      {
+        path: 'borrows',
+        name: 'BorrowManage',
+        component: () => import('../views/BorrowManage.vue')
+      }
+    ]
+  }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes
 })
 
 export default router

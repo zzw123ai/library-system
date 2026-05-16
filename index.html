@@ -3,69 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图书管理系统</title>
+    <title>图书馆管理系统</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "Microsoft YaHei", sans-serif;
+            font-family: Arial, sans-serif;
         }
 
         body {
-            background-color: #f0f2f5;
-            color: #333;
+            background-color: #f5f7fa;
+            padding: 20px;
         }
 
-        /* 导航栏 */
-        .navbar {
-            background-color: #2c3e50;
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .navbar h1 {
-            font-size: 1.5rem;
+            overflow: hidden;
         }
 
         .nav-tabs {
             display: flex;
-            gap: 1rem;
-        }
-
-        .nav-tab {
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .nav-tab.active {
             background-color: #3498db;
         }
 
-        .nav-tab:hover {
-            background-color: #34495e;
+        .nav-tab {
+            padding: 15px 25px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
         }
 
-        /* 主容器 */
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+        .nav-tab:hover, .nav-tab.active {
+            background-color: #2980b9;
         }
 
-        /* 页面通用样式 */
         .page {
             display: none;
-            background-color: white;
-            border-radius: 8px;
-            padding: 2rem;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            padding: 20px;
         }
 
         .page.active {
@@ -73,44 +52,41 @@
         }
 
         .page-title {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            color: #2c3e50;
-            border-left: 4px solid #3498db;
-            padding-left: 0.5rem;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
         }
 
-        /* 搜索和操作栏 */
         .action-bar {
             display: flex;
             justify-content: space-between;
+            margin-bottom: 20px;
             align-items: center;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-            gap: 1rem;
         }
 
         .search-box {
             display: flex;
-            gap: 0.5rem;
+            gap: 10px;
         }
 
-        input, button {
-            padding: 0.5rem 1rem;
+        input, select {
+            padding: 8px 12px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 0.9rem;
+            outline: none;
         }
 
         button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s;
+            color: white;
+            transition: background 0.3s;
         }
 
         .btn-primary {
             background-color: #3498db;
-            color: white;
-            border: none;
         }
 
         .btn-primary:hover {
@@ -119,8 +95,6 @@
 
         .btn-success {
             background-color: #27ae60;
-            color: white;
-            border: none;
         }
 
         .btn-success:hover {
@@ -129,23 +103,20 @@
 
         .btn-danger {
             background-color: #e74c3c;
-            color: white;
-            border: none;
         }
 
         .btn-danger:hover {
             background-color: #c0392b;
         }
 
-        /* 表格样式 */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
+            margin-top: 10px;
         }
 
         th, td {
-            padding: 0.8rem;
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid #eee;
         }
@@ -153,14 +124,8 @@
         th {
             background-color: #f8f9fa;
             font-weight: bold;
-            color: #2c3e50;
         }
 
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        /* 弹窗样式 */
         .modal {
             display: none;
             position: fixed;
@@ -171,125 +136,134 @@
             background-color: rgba(0,0,0,0.5);
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 999;
         }
 
         .modal-content {
             background-color: white;
-            padding: 2rem;
+            padding: 25px;
             border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            width: 400px;
+            max-width: 90%;
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 20px;
         }
 
         .close-modal {
             font-size: 1.5rem;
             cursor: pointer;
-            color: #777;
+            color: #666;
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 15px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 0.3rem;
-            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
         }
 
-        .form-group input {
+        .form-control {
             width: 100%;
         }
 
-        /* 响应式适配 */
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 1rem;
-            }
+        /* 新增：空数据提示 */
+        .empty-tip {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+            font-size: 1rem;
+        }
 
-            .action-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
+        /* 新增：提示消息 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            color: white;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
 
-            .search-box {
-                width: 100%;
-            }
+        .toast.success {
+            background-color: #27ae60;
+        }
 
-            input {
-                flex: 1;
-            }
+        .toast.error {
+            background-color: #e74c3c;
+        }
 
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
+        .toast.show {
+            opacity: 1;
+        }
 
-            thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
-            }
+        /* 新增：个人中心样式 */
+        .profile-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
 
-            tr {
-                border: 1px solid #eee;
-                margin-bottom: 1rem;
-            }
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
 
-            td {
-                border: none;
-                position: relative;
-                padding-left: 50%;
-            }
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+        }
 
-            td:before {
-                position: absolute;
-                top: 0.8rem;
-                left: 0.8rem;
-                width: 45%;
-                padding-right: 10px;
-                white-space: nowrap;
-                font-weight: bold;
-            }
+        .profile-details {
+            flex: 1;
+        }
 
-            /* 图书列表移动端显示 */
-            .book-list td:nth-of-type(1):before { content: "ID"; }
-            .book-list td:nth-of-type(2):before { content: "书名"; }
-            .book-list td:nth-of-type(3):before { content: "作者"; }
-            .book-list td:nth-of-type(4):before { content: "出版社"; }
-            .book-list td:nth-of-type(5):before { content: "操作"; }
+        /* 新增：表单验证样式 */
+        .form-group.error input {
+            border-color: #e74c3c;
+        }
 
-            /* 读者列表移动端显示 */
-            .reader-list td:nth-of-type(1):before { content: "ID"; }
-            .reader-list td:nth-of-type(2):before { content: "姓名"; }
-            .reader-list td:nth-of-type(3):before { content: "手机号"; }
-            .reader-list td:nth-of-type(4):before { content: "借阅数量"; }
-            .reader-list td:nth-of-type(5):before { content: "操作"; }
+        .form-group .error-tip {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        .form-group.error .error-tip {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <div class="navbar">
-        <h1>📚 图书管理系统</h1>
+    <div class="container">
         <div class="nav-tabs">
             <div class="nav-tab active" data-page="book-page">图书管理</div>
             <div class="nav-tab" data-page="reader-page">读者管理</div>
+            <div class="nav-tab" data-page="borrow-page">借阅管理</div>
+            <div class="nav-tab" data-page="profile-page">个人中心</div>
         </div>
-    </div>
 
-    <!-- 主容器 -->
-    <div class="container">
         <!-- 图书管理页面 -->
         <div class="page active" id="book-page">
             <h2 class="page-title">图书管理</h2>
@@ -300,7 +274,7 @@
                 </div>
                 <button class="btn-success" onclick="openBookModal()">新增图书</button>
             </div>
-            <table class="book-list">
+            <table>
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -310,9 +284,7 @@
                         <th>操作</th>
                     </tr>
                 </thead>
-                <tbody id="book-table-body">
-                    <!-- 数据由JS动态生成 -->
-                </tbody>
+                <tbody id="book-table-body"></tbody>
             </table>
         </div>
 
@@ -326,7 +298,7 @@
                 </div>
                 <button class="btn-success" onclick="openReaderModal()">新增读者</button>
             </div>
-            <table class="reader-list">
+            <table>
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -336,10 +308,79 @@
                         <th>操作</th>
                     </tr>
                 </thead>
-                <tbody id="reader-table-body">
-                    <!-- 数据由JS动态生成 -->
-                </tbody>
+                <tbody id="reader-table-body"></tbody>
             </table>
+        </div>
+
+        <!-- 借阅管理页面 -->
+        <div class="page" id="borrow-page">
+            <h2 class="page-title">借阅管理</h2>
+            <div class="action-bar">
+                <div class="search-box">
+                    <input type="text" id="borrow-search" placeholder="输入书名/读者姓名搜索...">
+                    <button class="btn-primary" onclick="searchBorrows()">搜索</button>
+                </div>
+                <button class="btn-success" onclick="openBorrowModal()">新增借阅</button>
+            </div>
+            <table class="borrow-list">
+                <thead>
+                    <tr>
+                        <th>借阅ID</th>
+                        <th>图书名称</th>
+                        <th>读者姓名</th>
+                        <th>借阅日期</th>
+                        <th>归还状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="borrow-table-body"></tbody>
+            </table>
+        </div>
+
+        <!-- 个人中心页面 -->
+        <div class="page" id="profile-page">
+            <h2 class="page-title">个人中心</h2>
+            <div class="profile-card">
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <span id="user-avatar">管</span>
+                    </div>
+                    <div class="profile-details">
+                        <h3 id="user-name">管理员</h3>
+                        <p>系统管理员 | 管理所有图书/读者/借阅数据</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="page-title" style="font-size: 1.1rem;">我的借阅管理</h3>
+            <table class="borrow-list">
+                <thead>
+                    <tr>
+                        <th>图书名称</th>
+                        <th>借阅日期</th>
+                        <th>归还状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="my-borrow-table-body"></tbody>
+            </table>
+
+            <h3 class="page-title" style="font-size: 1.1rem; margin-top: 2rem;">修改密码</h3>
+            <div class="profile-card">
+                <div class="form-group">
+                    <label>原密码</label>
+                    <input type="password" id="old-password">
+                </div>
+                <div class="form-group">
+                    <label>新密码</label>
+                    <input type="password" id="new-password">
+                </div>
+                <div class="form-group">
+                    <label>确认新密码</label>
+                    <input type="password" id="confirm-password">
+                </div>
+                <button class="btn-primary" onclick="changePassword()">保存修改</button>
+            </div>
         </div>
     </div>
 
@@ -352,15 +393,15 @@
             </div>
             <div class="form-group">
                 <label>书名</label>
-                <input type="text" id="book-name">
+                <input type="text" id="book-name" class="form-control">
             </div>
             <div class="form-group">
                 <label>作者</label>
-                <input type="text" id="book-author">
+                <input type="text" id="book-author" class="form-control">
             </div>
             <div class="form-group">
                 <label>出版社</label>
-                <input type="text" id="book-publisher">
+                <input type="text" id="book-publisher" class="form-control">
             </div>
             <button class="btn-primary" onclick="saveBook()">保存</button>
         </div>
@@ -375,22 +416,52 @@
             </div>
             <div class="form-group">
                 <label>姓名</label>
-                <input type="text" id="reader-name">
+                <input type="text" id="reader-name" class="form-control">
             </div>
             <div class="form-group">
                 <label>手机号</label>
-                <input type="text" id="reader-phone">
+                <input type="text" id="reader-phone" class="form-control">
             </div>
             <div class="form-group">
                 <label>借阅数量</label>
-                <input type="number" id="reader-borrow" min="0">
+                <input type="number" id="reader-borrow" value="0" min="0" class="form-control">
             </div>
             <button class="btn-primary" onclick="saveReader()">保存</button>
         </div>
     </div>
 
+    <!-- 借阅弹窗 -->
+    <div class="modal" id="borrow-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="borrow-modal-title">新增借阅</h3>
+                <span class="close-modal" onclick="closeBorrowModal()">&times;</span>
+            </div>
+            <div class="form-group">
+                <label>选择图书</label>
+                <select id="borrow-book" class="form-control">
+                    <option value="">--请选择图书--</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>选择读者</label>
+                <select id="borrow-reader" class="form-control">
+                    <option value="">--请选择读者--</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>借阅日期</label>
+                <input type="date" id="borrow-date">
+            </div>
+            <button class="btn-primary" onclick="saveBorrow()">保存</button>
+        </div>
+    </div>
+
+    <!-- 提示消息容器 -->
+    <div class="toast" id="toast"></div>
+
     <script>
-        // 模拟数据
+        // 模拟初始数据
         let books = [
             { id: 1, name: "红楼梦", author: "曹雪芹", publisher: "人民文学出版社" },
             { id: 2, name: "西游记", author: "吴承恩", publisher: "中华书局" },
@@ -402,27 +473,78 @@
             { id: 2, name: "李四", phone: "13900139002", borrow: 1 }
         ];
 
+        let borrows = [
+            { id: 1, bookId: 1, readerId: 1, borrowDate: "2024-01-10", isReturned: false },
+            { id: 2, bookId: 2, readerId: 2, borrowDate: "2024-01-15", isReturned: true }
+        ];
+
         let currentBookId = null;
         let currentReaderId = null;
+        let currentBorrowId = null;
+        let adminPwd = "123456";
 
-        // 页面切换
+        // 页面切换逻辑
         document.querySelectorAll(".nav-tab").forEach(tab => {
             tab.addEventListener("click", function() {
                 document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
                 document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
                 this.classList.add("active");
                 document.getElementById(this.dataset.page).classList.add("active");
+                if (this.dataset.page === "profile-page") {
+                    renderMyBorrows();
+                }
             });
         });
 
-        // 初始化数据
+        // 初始化数据（从本地存储加载）
+        initData();
         renderBooks();
         renderReaders();
+        renderBorrows();
+        initBorrowSelect();
 
-        // 渲染图书列表
+        // 本地存储持久化
+        function initData() {
+            const savedBooks = localStorage.getItem("library_books");
+            const savedReaders = localStorage.getItem("library_readers");
+            const savedBorrows = localStorage.getItem("library_borrows");
+            const savedPwd = localStorage.getItem("library_admin_pwd");
+
+            if (savedBooks) books = JSON.parse(savedBooks);
+            if (savedReaders) readers = JSON.parse(savedReaders);
+            if (savedBorrows) borrows = JSON.parse(savedBorrows);
+            if (savedPwd) adminPwd = savedPwd;
+        }
+
+        function saveData() {
+            localStorage.setItem("library_books", JSON.stringify(books));
+            localStorage.setItem("library_readers", JSON.stringify(readers));
+            localStorage.setItem("library_borrows", JSON.stringify(borrows));
+            localStorage.setItem("library_admin_pwd", adminPwd);
+        }
+
+        // 全局提示消息
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add("show");
+            
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3000);
+        }
+
+        // 图书管理逻辑
         function renderBooks(list = books) {
             const tbody = document.getElementById("book-table-body");
             tbody.innerHTML = "";
+            
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty-tip">暂无图书数据</td></tr>`;
+                return;
+            }
+            
             list.forEach(book => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
@@ -439,27 +561,6 @@
             });
         }
 
-        // 渲染读者列表
-        function renderReaders(list = readers) {
-            const tbody = document.getElementById("reader-table-body");
-            tbody.innerHTML = "";
-            list.forEach(reader => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${reader.id}</td>
-                    <td>${reader.name}</td>
-                    <td>${reader.phone}</td>
-                    <td>${reader.borrow}</td>
-                    <td>
-                        <button class="btn-primary" onclick="editReader(${reader.id})">编辑</button>
-                        <button class="btn-danger" onclick="deleteReader(${reader.id})">删除</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // 图书操作
         function openBookModal(book = null) {
             document.getElementById("book-modal").style.display = "flex";
             if (book) {
@@ -482,27 +583,29 @@
         }
 
         function saveBook() {
-            const name = document.getElementById("book-name").value;
-            const author = document.getElementById("book-author").value;
-            const publisher = document.getElementById("book-publisher").value;
+            const name = document.getElementById("book-name").value.trim();
+            const author = document.getElementById("book-author").value.trim();
+            const publisher = document.getElementById("book-publisher").value.trim();
 
             if (!name || !author || !publisher) {
-                alert("请填写完整信息");
+                showToast("请填写完整信息", "error");
                 return;
             }
 
             if (currentBookId) {
-                // 编辑
                 const index = books.findIndex(b => b.id === currentBookId);
                 books[index] = { id: currentBookId, name, author, publisher };
+                showToast("图书编辑成功");
             } else {
-                // 新增
                 const newId = books.length > 0 ? Math.max(...books.map(b => b.id)) + 1 : 1;
                 books.push({ id: newId, name, author, publisher });
+                showToast("图书新增成功");
             }
 
             renderBooks();
+            saveData();
             closeBookModal();
+            initBorrowSelect();
         }
 
         function editBook(id) {
@@ -511,14 +614,23 @@
         }
 
         function deleteBook(id) {
+            const hasBorrow = borrows.some(b => b.bookId === id && !b.isReturned);
+            if (hasBorrow) {
+                showToast("该图书有未归还的借阅记录，无法删除", "error");
+                return;
+            }
+
             if (confirm("确定要删除这本图书吗？")) {
                 books = books.filter(b => b.id !== id);
                 renderBooks();
+                saveData();
+                showToast("图书删除成功");
+                initBorrowSelect();
             }
         }
 
         function searchBooks() {
-            const keyword = document.getElementById("book-search").value.toLowerCase();
+            const keyword = document.getElementById("book-search").value.toLowerCase().trim();
             const filtered = books.filter(b => 
                 b.name.toLowerCase().includes(keyword) || 
                 b.author.toLowerCase().includes(keyword)
@@ -526,7 +638,32 @@
             renderBooks(filtered);
         }
 
-        // 读者操作
+        // 读者管理逻辑
+        function renderReaders(list = readers) {
+            const tbody = document.getElementById("reader-table-body");
+            tbody.innerHTML = "";
+            
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty-tip">暂无读者数据</td></tr>`;
+                return;
+            }
+            
+            list.forEach(reader => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${reader.id}</td>
+                    <td>${reader.name}</td>
+                    <td>${reader.phone}</td>
+                    <td>${reader.borrow}</td>
+                    <td>
+                        <button class="btn-primary" onclick="editReader(${reader.id})">编辑</button>
+                        <button class="btn-danger" onclick="deleteReader(${reader.id})">删除</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
         function openReaderModal(reader = null) {
             document.getElementById("reader-modal").style.display = "flex";
             if (reader) {
@@ -549,27 +686,38 @@
         }
 
         function saveReader() {
-            const name = document.getElementById("reader-name").value;
-            const phone = document.getElementById("reader-phone").value;
+            const name = document.getElementById("reader-name").value.trim();
+            const phone = document.getElementById("reader-phone").value.trim();
             const borrow = parseInt(document.getElementById("reader-borrow").value);
 
-            if (!name || !phone || isNaN(borrow)) {
-                alert("请填写完整信息");
+            const phoneReg = /^1[3-9]\d{9}$/;
+            if (!name) {
+                showToast("请填写读者姓名", "error");
+                return;
+            }
+            if (!phoneReg.test(phone)) {
+                showToast("请填写正确的手机号", "error");
+                return;
+            }
+            if (isNaN(borrow) || borrow < 0) {
+                showToast("借阅数量必须为非负整数", "error");
                 return;
             }
 
             if (currentReaderId) {
-                // 编辑
                 const index = readers.findIndex(r => r.id === currentReaderId);
                 readers[index] = { id: currentReaderId, name, phone, borrow };
+                showToast("读者编辑成功");
             } else {
-                // 新增
                 const newId = readers.length > 0 ? Math.max(...readers.map(r => r.id)) + 1 : 1;
                 readers.push({ id: newId, name, phone, borrow });
+                showToast("读者新增成功");
             }
 
             renderReaders();
+            saveData();
             closeReaderModal();
+            initBorrowSelect();
         }
 
         function editReader(id) {
@@ -578,19 +726,266 @@
         }
 
         function deleteReader(id) {
+            const hasBorrow = borrows.some(b => b.readerId === id && !b.isReturned);
+            if (hasBorrow) {
+                showToast("该读者有未归还的借阅记录，无法删除", "error");
+                return;
+            }
+
             if (confirm("确定要删除该读者吗？")) {
                 readers = readers.filter(r => r.id !== id);
                 renderReaders();
+                saveData();
+                showToast("读者删除成功");
+                initBorrowSelect();
             }
         }
 
         function searchReaders() {
-            const keyword = document.getElementById("reader-search").value.toLowerCase();
+            const keyword = document.getElementById("reader-search").value.toLowerCase().trim();
             const filtered = readers.filter(r => 
                 r.name.toLowerCase().includes(keyword) || 
                 r.phone.includes(keyword)
             );
             renderReaders(filtered);
+        }
+
+        // 借阅管理逻辑
+        function initBorrowSelect() {
+            const bookSelect = document.getElementById("borrow-book");
+            bookSelect.innerHTML = '<option value="">--请选择图书--</option>';
+            books.forEach(book => {
+                const option = document.createElement("option");
+                option.value = book.id;
+                option.textContent = book.name;
+                bookSelect.appendChild(option);
+            });
+
+            const readerSelect = document.getElementById("borrow-reader");
+            readerSelect.innerHTML = '<option value="">--请选择读者--</option>';
+            readers.forEach(reader => {
+                const option = document.createElement("option");
+                option.value = reader.id;
+                option.textContent = reader.name;
+                readerSelect.appendChild(option);
+            });
+        }
+
+        function renderBorrows(list = borrows) {
+            const tbody = document.getElementById("borrow-table-body");
+            tbody.innerHTML = "";
+            
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-tip">暂无借阅数据</td></tr>`;
+                return;
+            }
+            
+            list.forEach(borrow => {
+                const book = books.find(b => b.id === borrow.bookId) || { name: "未知图书" };
+                const reader = readers.find(r => r.id === borrow.readerId) || { name: "未知读者" };
+                const status = borrow.isReturned ? 
+                    '<span style="color: #27ae60;">已归还</span>' : 
+                    '<span style="color: #e74c3c;">未归还</span>';
+                
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${borrow.id}</td>
+                    <td>${book.name}</td>
+                    <td>${reader.name}</td>
+                    <td>${borrow.borrowDate}</td>
+                    <td>${status}</td>
+                    <td>
+                        ${!borrow.isReturned ? 
+                            `<button class="btn-primary" onclick="returnBook(${borrow.id})">归还</button>` : 
+                            '<button class="btn-primary" disabled>已归还</button>'
+                        }
+                        <button class="btn-danger" onclick="deleteBorrow(${borrow.id})">删除</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openBorrowModal(borrow = null) {
+            document.getElementById("borrow-modal").style.display = "flex";
+            initBorrowSelect();
+            
+            if (borrow) {
+                document.getElementById("borrow-modal-title").textContent = "编辑借阅";
+                document.getElementById("borrow-book").value = borrow.bookId;
+                document.getElementById("borrow-reader").value = borrow.readerId;
+                document.getElementById("borrow-date").value = borrow.borrowDate;
+                currentBorrowId = borrow.id;
+            } else {
+                document.getElementById("borrow-modal-title").textContent = "新增借阅";
+                const today = new Date().toISOString().split("T")[0];
+                document.getElementById("borrow-date").value = today;
+                currentBorrowId = null;
+            }
+        }
+
+        function closeBorrowModal() {
+            document.getElementById("borrow-modal").style.display = "none";
+        }
+
+        function saveBorrow() {
+            const bookId = parseInt(document.getElementById("borrow-book").value);
+            const readerId = parseInt(document.getElementById("borrow-reader").value);
+            const borrowDate = document.getElementById("borrow-date").value;
+
+            if (!bookId || !readerId || !borrowDate) {
+                showToast("请填写完整借阅信息", "error");
+                return;
+            }
+
+            const bookBorrowed = borrows.some(b => b.bookId === bookId && !b.isReturned);
+            if (bookBorrowed && !currentBorrowId) {
+                showToast("该图书已有未归还的借阅记录", "error");
+                return;
+            }
+
+            if (currentBorrowId) {
+                const index = borrows.findIndex(b => b.id === currentBorrowId);
+                borrows[index] = { 
+                    id: currentBorrowId, 
+                    bookId, 
+                    readerId, 
+                    borrowDate,
+                    isReturned: borrows[index].isReturned
+                };
+                showToast("借阅记录编辑成功");
+            } else {
+                const newId = borrows.length > 0 ? Math.max(...borrows.map(b => b.id)) + 1 : 1;
+                borrows.push({ 
+                    id: newId, 
+                    bookId, 
+                    readerId, 
+                    borrowDate,
+                    isReturned: false
+                });
+                const readerIndex = readers.findIndex(r => r.id === readerId);
+                readers[readerIndex].borrow += 1;
+                showToast("借阅记录新增成功");
+            }
+
+            renderBorrows();
+            renderReaders();
+            saveData();
+            closeBorrowModal();
+        }
+
+        function returnBook(id) {
+            if (confirm("确定要归还该图书吗？")) {
+                const index = borrows.findIndex(b => b.id === id);
+                borrows[index].isReturned = true;
+                
+                const readerId = borrows[index].readerId;
+                const readerIndex = readers.findIndex(r => r.id === readerId);
+                if (readers[readerIndex].borrow > 0) {
+                    readers[readerIndex].borrow -= 1;
+                }
+                
+                renderBorrows();
+                renderReaders();
+                saveData();
+                showToast("图书归还成功");
+            }
+        }
+
+        function deleteBorrow(id) {
+            if (confirm("确定要删除该借阅记录吗？")) {
+                const borrow = borrows.find(b => b.id === id);
+                // 如果未归还，恢复读者借阅数量
+                if (!borrow.isReturned) {
+                    const readerIndex = readers.findIndex(r => r.id === borrow.readerId);
+                    if (readers[readerIndex].borrow > 0) {
+                        readers[readerIndex].borrow -= 1;
+                    }
+                }
+                
+                borrows = borrows.filter(b => b.id !== id);
+                renderBorrows();
+                renderReaders();
+                saveData();
+                showToast("借阅记录删除成功");
+            }
+        }
+
+        function searchBorrows() {
+            const keyword = document.getElementById("borrow-search").value.toLowerCase().trim();
+            if (!keyword) {
+                renderBorrows();
+                return;
+            }
+            
+            const filtered = borrows.filter(b => {
+                const book = books.find(book => book.id === b.bookId);
+                const reader = readers.find(reader => reader.id === b.readerId);
+                return (book && book.name.toLowerCase().includes(keyword)) || 
+                       (reader && reader.name.toLowerCase().includes(keyword));
+            });
+            renderBorrows(filtered);
+        }
+
+        // 个人中心逻辑
+        function renderMyBorrows() {
+            const tbody = document.getElementById("my-borrow-table-body");
+            tbody.innerHTML = "";
+            
+            if (borrows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="empty-tip">暂无借阅记录</td></tr>`;
+                return;
+            }
+            
+            // 管理员视角显示所有借阅记录
+            borrows.forEach(borrow => {
+                const book = books.find(b => b.id === borrow.bookId) || { name: "未知图书" };
+                const status = borrow.isReturned ? 
+                    '<span style="color: #27ae60;">已归还</span>' : 
+                    '<span style="color: #e74c3c;">未归还</span>';
+                const action = borrow.isReturned ? 
+                    '<button class="btn-primary" disabled>已归还</button>' : 
+                    `<button class="btn-primary" onclick="returnBook(${borrow.id})">立即归还</button>`;
+                
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${book.name}</td>
+                    <td>${borrow.borrowDate}</td>
+                    <td>${status}</td>
+                    <td>${action}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function changePassword() {
+            const oldPwd = document.getElementById("old-password").value;
+            const newPwd = document.getElementById("new-password").value;
+            const confirmPwd = document.getElementById("confirm-password").value;
+
+            // 验证
+            if (oldPwd !== adminPwd) {
+                showToast("原密码错误", "error");
+                return;
+            }
+            if (newPwd.length < 6) {
+                showToast("新密码长度不能少于6位", "error");
+                return;
+            }
+            if (newPwd !== confirmPwd) {
+                showToast("两次输入的密码不一致", "error");
+                return;
+            }
+
+            // 修改密码
+            adminPwd = newPwd;
+            saveData();
+            showToast("密码修改成功");
+            
+            // 清空输入框
+            document.getElementById("old-password").value = "";
+            document.getElementById("new-password").value = "";
+            document.getElementById("confirm-password").value = "";
         }
 
         // 点击弹窗外部关闭
@@ -599,6 +994,17 @@
                 event.target.style.display = "none";
             }
         }
+
+        // 支持回车搜索
+        document.getElementById("book-search").addEventListener("keyup", function(e) {
+            if (e.key === "Enter") searchBooks();
+        });
+        document.getElementById("reader-search").addEventListener("keyup", function(e) {
+            if (e.key === "Enter") searchReaders();
+        });
+        document.getElementById("borrow-search").addEventListener("keyup", function(e) {
+            if (e.key === "Enter") searchBorrows();
+        });
     </script>
 </body>
 </html>

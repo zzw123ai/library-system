@@ -55,7 +55,7 @@ class UserServiceTest {
     @Test
     @Order(5)
     void testLogin() {
-        User user = userService.login("admin", "admin123");
+        User user = userService.login("admin", "password");
         assertNotNull(user);
         assertEquals("admin", user.getUsername());
         assertEquals("1", user.getRole());

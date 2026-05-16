@@ -43,7 +43,7 @@ class UserControllerTest {
     void testLogin() throws Exception {
         User loginRequest = new User();
         loginRequest.setUsername("admin");
-        loginRequest.setPassword("admin123");
+        loginRequest.setPassword("password");
 
         mockMvc.perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)

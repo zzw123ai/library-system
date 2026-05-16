@@ -57,6 +57,7 @@
             </div>
           </div>
         </div>
+        
         <router-view v-else />
       </main>
     </div>
@@ -144,26 +145,26 @@ onMounted(() => {
 }
 
 .sidebar {
-  width: 250px;
-  background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+  width: 220px;
+  background-color: #2c3e50;
   color: white;
   display: flex;
   flex-direction: column;
-  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  padding: 20px 0;
+  transition: all 0.3s ease;
 }
 
 .logo {
-  padding: 28px 20px;
-  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
   text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px 0;
+  border-bottom: 1px solid #34495e;
+  margin-bottom: 20px;
 }
 
 .logo h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
-  letter-spacing: 1px;
 }
 
 .menu {
@@ -174,28 +175,23 @@ onMounted(() => {
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 14px 16px;
-  margin-bottom: 6px;
-  border-radius: 8px;
-  color: #e2e8f0;
+  padding: 12px 25px;
+  color: #bdc3c7;
   text-decoration: none;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 16px;
 }
 
-.menu-item:hover {
-  background-color: rgba(66, 153, 225, 0.2);
-  transform: translateX(4px);
-}
-
+.menu-item:hover,
 .menu-item.active {
-  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+  background-color: #34495e;
+  color: white;
+  border-left: 4px solid #3498db;
 }
 
 .icon {
   margin-right: 12px;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .user-info {
@@ -228,41 +224,38 @@ onMounted(() => {
 }
 
 .header {
-  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-  color: white;
-  padding: 20px 28px;
+  background-color: white;
+  padding: 15px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .header-title {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 600;
+  color: #2c3e50;
 }
 
 .logout-btn {
-  padding: 10px 22px;
-  background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+  padding: 8px 16px;
+  background-color: #e74c3c;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(252, 129, 129, 0.3);
 }
 
 .logout-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(252, 129, 129, 0.4);
+  background-color: #c0392b;
 }
 
 .content {
   flex: 1;
-  padding: 28px;
+  padding: 30px;
 }
 
 .welcome-card {
@@ -323,4 +316,5 @@ onMounted(() => {
   font-size: 14px;
   font-weight: 500;
 }
+
 </style>

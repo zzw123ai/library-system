@@ -1,6 +1,6 @@
 -- 初始数据
 
-INSERT INTO `user` (username, password, role) VALUES
+INSERT IGNORE INTO `user` (username, password, role) VALUES
 ('admin', 'password', '1'),
 ('user1', 'user123', '0'),
 ('user2', 'user123', '0');

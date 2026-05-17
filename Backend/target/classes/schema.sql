@@ -1,28 +1,40 @@
--- MySQL/H2 建表脚本
-
+-- 用户表
 CREATE TABLE IF NOT EXISTS `user` (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role VARCHAR(10) NOT NULL
+    email VARCHAR(100),
+    role VARCHAR(20) DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- 图书表
 CREATE TABLE IF NOT EXISTS book (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(100) NOT NULL,
     author VARCHAR(50) NOT NULL,
-    isbn VARCHAR(20) NOT NULL UNIQUE,
-    publisher VARCHAR(100) NOT NULL,
-    quantity INT NOT NULL,
-    available INT NOT NULL
+    isbn VARCHAR(20) UNIQUE,
+    publisher VARCHAR(100),
+    quantity INT DEFAULT 1,
+    available INT DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- 借阅记录表
 CREATE TABLE IF NOT EXISTS borrow_record (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     book_id INT NOT NULL,
-    borrow_date TIMESTAMP NOT NULL,
-    due_date DATE NOT NULL,
-    return_date TIMESTAMP DEFAULT NULL,
-    status VARCHAR(20) NOT NULL
+    borrow_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    due_date DATETIME,
+    return_date DATETIME NULL,
+    status VARCHAR(20) DEFAULT '借阅中',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+-- 创建外键约束
+ALTER TABLE borrow_record ADD CONSTRAINT fk_borrow_user FOREIGN KEY (user_id) REFERENCES `user`(id);
+ALTER TABLE borrow_record ADD CONSTRAINT fk_borrow_book FOREIGN KEY (book_id) REFERENCES book(id);

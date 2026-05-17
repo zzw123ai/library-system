@@ -71,4 +71,26 @@ public class BookController {
         bookService.delete(id);
         return Result.success("删除成功");
     }
+
+    @GetMapping("/duplicates")
+    public Result<List<Book>> findDuplicates() {
+        List<Book> duplicates = bookService.findDuplicateBooks();
+        return Result.success(duplicates);
+    }
+
+    @GetMapping("/duplicates/count")
+    public Result<Integer> countDuplicates() {
+        int count = bookService.countDuplicateBooks();
+        return Result.success(count);
+    }
+
+    @DeleteMapping("/duplicates")
+    public Result<String> removeDuplicates() {
+        int count = bookService.countDuplicateBooks();
+        if (count == 0) {
+            return Result.success("没有重复书籍");
+        }
+        bookService.removeDuplicateBooks();
+        return Result.success("已删除 " + count + " 本重复书籍");
+    }
 }

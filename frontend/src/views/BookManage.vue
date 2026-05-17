@@ -11,8 +11,10 @@
         class="search-input"
         @input="loadBooks"
       />
-      <!-- 只有管理员可以添加图书 -->
-      <button v-if="isAdmin" class="add-btn" @click="showAddModal = true">添加图书</button>
+      <div>
+        <button v-if="isAdmin" class="add-btn" @click="showAddModal = true">添加图书</button>
+        <button v-if="isAdmin" class="remove-dup-btn" @click="handleRemoveDuplicates">删除重复书本</button>
+      </div>
     </div>
 
     <!-- 图书列表 -->
@@ -81,7 +83,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { getBooks, addBook, updateBook, deleteBook as apiDeleteBook } from '../api/book'
+import { getBooks, addBook, updateBook, deleteBook as apiDeleteBook, removeDuplicateBooks } from '../api/book'
 import { isAdmin as checkAdmin } from '../utils/auth'
 
 const books = ref([])
@@ -160,6 +162,22 @@ const deleteBook = async (id) => {
   }
 }
 
+const handleRemoveDuplicates = async () => {
+  if (confirm('确定要删除所有重复的图书吗？系统将保留每组重复书籍中ID最小的那本。')) {
+    try {
+      const response = await removeDuplicateBooks()
+      if (response.data && response.data.code === 200) {
+        alert(response.data.data || response.data.message)
+        loadBooks()
+      } else {
+        alert(response.data?.message || '删除失败')
+      }
+    } catch (error) {
+      alert('删除重复书籍时出错')
+    }
+  }
+}
+
 const closeModal = () => {
   showAddModal.value = false
   isEdit.value = false
@@ -215,6 +233,22 @@ h2 {
 
 .add-btn:hover {
   background-color: #2980b9;
+}
+
+.remove-dup-btn {
+  padding: 8px 16px;
+  background-color: #9b59b6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin-left: 10px;
+}
+
+.remove-dup-btn:hover {
+  background-color: #8e44ad;
 }
 
 .table-container {

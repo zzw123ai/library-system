@@ -105,5 +105,14 @@ public class BorrowService {
 
     public void delete(Integer id) {
         borrowMapper.delete(id);
+        List<Integer> ids = borrowMapper.getAllIds();
+        for (int i = ids.size() - 1; i >= 0; i--) {
+            int oldId = ids.get(i);
+            int newId = i + 1;
+            if (oldId != newId) {
+                borrowMapper.updateId(oldId, newId);
+            }
+        }
+        borrowMapper.resetAutoIncrement();
     }
 }

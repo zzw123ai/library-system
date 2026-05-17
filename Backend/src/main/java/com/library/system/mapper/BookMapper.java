@@ -49,4 +49,19 @@ public interface BookMapper {
 
     @Delete("DELETE FROM book WHERE id = #{id}")
     void delete(Integer id);
+
+    @Update("UPDATE borrow_record SET book_id = (SELECT new_id FROM (SELECT b.id AS old_id, (SELECT COUNT(*) FROM book WHERE id < b.id) + 1 AS new_id FROM book b) tmp WHERE tmp.old_id = borrow_record.book_id) WHERE book_id IN (SELECT id FROM book)")
+    void updateBorrowRecordBookIds();
+
+    @Update("UPDATE book SET id = (SELECT COUNT(*) FROM (SELECT id FROM book ORDER BY id) AS b2 WHERE b2.id < book.id) + 1")
+    void renumberIds();
+
+    @Select("SELECT * FROM book WHERE title IN (SELECT title FROM book GROUP BY title HAVING COUNT(*) > 1)")
+    List<Book> findDuplicateBooks();
+
+    @Delete("DELETE FROM book WHERE id IN (SELECT id FROM (SELECT id, ROW_NUMBER() OVER (PARTITION BY title ORDER BY id) AS rn FROM book) tmp WHERE rn > 1)")
+    void deleteDuplicateBooks();
+
+    @Select("SELECT COUNT(*) FROM book WHERE title IN (SELECT title FROM book GROUP BY title HAVING COUNT(*) > 1)")
+    int countDuplicateBooks();
 }

@@ -44,3 +44,24 @@ export function deleteBook(id) {
     method: 'delete',
   })
 }
+
+export function getDuplicateBooks() {
+  return request({
+    url: '/api/book/duplicates',
+    method: 'get',
+  })
+}
+
+export function getDuplicateBooksCount() {
+  return request({
+    url: '/api/book/duplicates/count',
+    method: 'get',
+  })
+}
+
+export function removeDuplicateBooks() {
+  return request({
+    url: '/api/book/duplicates',
+    method: 'delete',
+  })
+}

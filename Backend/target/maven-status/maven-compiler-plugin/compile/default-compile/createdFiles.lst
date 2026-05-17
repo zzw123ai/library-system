@@ -1,3 +1,4 @@
+com\library\system\config\GlobalExceptionHandler.class
 com\library\system\controller\UserController.class
 com\library\system\service\BorrowService.class
 com\library\system\config\CorsConfig.class

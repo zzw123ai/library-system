@@ -1,11 +1,12 @@
 package com.library.system.service;
 
-import com.library.system.entity.Book;
-import com.library.system.mapper.BookMapper;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.library.system.entity.Book;
+import com.library.system.mapper.BookMapper;
 
 @Service
 public class BookService {
@@ -50,6 +51,21 @@ public class BookService {
     }
 
     public void delete(Integer id) {
+        bookMapper.updateBorrowRecordBookIds();
         bookMapper.delete(id);
+        bookMapper.renumberIds();
+    }
+
+    public List<Book> findDuplicateBooks() {
+        return bookMapper.findDuplicateBooks();
+    }
+
+    public int countDuplicateBooks() {
+        return bookMapper.countDuplicateBooks();
+    }
+
+    public void removeDuplicateBooks() {
+        bookMapper.deleteDuplicateBooks();
+        bookMapper.renumberIds();
     }
 }

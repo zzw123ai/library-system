@@ -31,4 +31,13 @@ public interface BorrowMapper {
 
     @Delete("DELETE FROM borrow_record WHERE id = #{id}")
     void delete(Integer id);
+
+    @Update("UPDATE borrow_record SET id = #{newId} WHERE id = #{oldId}")
+    void updateId(Integer oldId, Integer newId);
+    
+    @Update("ALTER TABLE borrow_record AUTO_INCREMENT = 1")
+    void resetAutoIncrement();
+    
+    @Select("SELECT id FROM borrow_record ORDER BY id")
+    List<Integer> getAllIds();
 }

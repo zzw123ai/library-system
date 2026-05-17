@@ -1,12 +1,12 @@
 package com.library.system.service;
 
-import com.library.system.common.PasswordUtil;
-import com.library.system.entity.User;
-import com.library.system.mapper.UserMapper;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.library.system.entity.User;
+import com.library.system.mapper.UserMapper;
 
 @Service
 public class UserService {
@@ -49,7 +49,9 @@ public class UserService {
     }
 
     public void delete(Integer id) {
+        userMapper.updateBorrowRecordUserIds();
         userMapper.delete(id);
+        userMapper.renumberIds();
     }
 
     public List<User> search(String username, String role) {

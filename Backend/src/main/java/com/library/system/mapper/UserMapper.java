@@ -38,6 +38,12 @@ public interface UserMapper {
     @Delete("DELETE FROM `user` WHERE id = #{id}")
     void delete(@Param("id") Integer id);
 
+    @Update("UPDATE borrow_record SET user_id = (SELECT new_id FROM (SELECT u.id AS old_id, (SELECT COUNT(*) FROM `user` WHERE id < u.id) + 1 AS new_id FROM `user` u) tmp WHERE tmp.old_id = borrow_record.user_id) WHERE user_id IN (SELECT id FROM `user`)")
+    void updateBorrowRecordUserIds();
+
+    @Update("UPDATE `user` SET id = (SELECT COUNT(*) FROM (SELECT id FROM `user` ORDER BY id) AS u2 WHERE u2.id < `user`.id) + 1")
+    void renumberIds();
+
     @Select("<script>" +
             "SELECT * FROM `user` WHERE 1=1" +
             "<if test='username != null and username != \"\"'> AND username LIKE CONCAT('%', #{username}, '%')</if>" +

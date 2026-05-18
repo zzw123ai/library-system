@@ -1,0 +1,374 @@
+/* ========== 关键帧 ========== */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-up-soft {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(2px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-12deg);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(91, 141, 239, 0.28);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(91, 141, 239, 0);
+  }
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes stat-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ========== 入场工具类 ========== */
+.anim-fade-up {
+  animation: fade-up 0.55s var(--ease-smooth) backwards;
+}
+
+.anim-fade-scale {
+  animation: fade-scale-in 0.45s var(--ease-smooth) backwards;
+}
+
+.anim-delay-1 {
+  animation-delay: 0.08s;
+}
+.anim-delay-2 {
+  animation-delay: 0.16s;
+}
+.anim-delay-3 {
+  animation-delay: 0.24s;
+}
+
+/* ========== 顶栏路由切换 ========== */
+.route-fade-enter-active,
+.route-fade-leave-active {
+  transition:
+    opacity var(--motion-base) var(--ease-smooth),
+    transform var(--motion-base) var(--ease-smooth);
+}
+
+.route-fade-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.route-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+/* ========== 弹窗（全站 modal-fade） ========== */
+.modal-fade-enter-active {
+  transition: opacity var(--motion-base) var(--ease-smooth);
+}
+
+.modal-fade-leave-active {
+  transition: opacity 0.18s ease;
+}
+
+.modal-fade-enter-active .modal-overlay {
+  animation: overlay-in var(--motion-base) var(--ease-smooth);
+}
+
+.modal-fade-leave-active .modal-overlay {
+  transition: opacity 0.18s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .modal,
+.modal-fade-leave-to .modal {
+  opacity: 0;
+  transform: translateY(18px) scale(0.94);
+}
+
+.modal-fade-enter-active .modal {
+  animation: slide-up-soft 0.32s var(--ease-snappy) backwards;
+}
+
+.modal-fade-leave-active .modal {
+  transition:
+    transform 0.2s var(--ease-smooth),
+    opacity 0.18s ease;
+}
+
+.modal-fade-enter-to .modal,
+.modal-fade-leave-from .modal {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ========== 按钮光泽与按压 ========== */
+:where(
+  .add-btn,
+  .remove-dup-btn,
+  .edit-btn,
+  .delete-btn,
+  .return-btn,
+  .submit-btn,
+  .logout-btn,
+  .login-btn
+) {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+:where(.add-btn, .submit-btn, .login-btn, .logout-btn)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 60%
+  );
+  transform: translateX(-120%) skewX(-12deg);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--motion-fast);
+}
+
+:where(.add-btn, .submit-btn, .login-btn, .logout-btn):hover::after {
+  opacity: 1;
+  animation: shimmer 0.75s var(--ease-smooth);
+}
+
+/* ========== 表格行（仅背景过渡，无左侧/底部色条） ========== */
+.data-table tbody tr {
+  transition: background-color var(--motion-fast) var(--ease-smooth);
+}
+
+.data-table tbody tr:hover {
+  background-color: #f8faff;
+}
+
+/* 表格容器：细滚动条，避免底部粗蓝条 */
+.table-wrap {
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(91, 141, 239, 0.22) transparent;
+}
+
+.table-wrap::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+.table-wrap::-webkit-scrollbar-thumb {
+  background: rgba(91, 141, 239, 0.22);
+  border-radius: 4px;
+}
+
+.table-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 主内容区：细滚动条，避免底部粗蓝条 */
+.content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(91, 141, 239, 0.18) transparent;
+}
+
+.content::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: rgba(91, 141, 239, 0.2);
+  border-radius: 6px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ========== 统计卡片 ========== */
+.stat-item {
+  animation: stat-pop 0.5s var(--ease-smooth) backwards;
+  transition:
+    transform var(--motion-fast) var(--ease-smooth),
+    box-shadow var(--motion-fast) var(--ease-smooth);
+}
+
+.stat-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.stat-item:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.stat-item:nth-child(3) {
+  animation-delay: 0.26s;
+}
+
+.stat-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(91, 141, 239, 0.15);
+}
+
+/* ========== 侧栏菜单 ========== */
+.menu-item {
+  transition:
+    background-color var(--motion-fast) var(--ease-smooth),
+    color var(--motion-fast) var(--ease-smooth),
+    transform var(--motion-fast) var(--ease-snappy),
+    box-shadow var(--motion-fast) var(--ease-smooth) !important;
+}
+
+.menu-item.active {
+  box-shadow: inset 3px 0 0 var(--primary-0);
+}
+
+.menu-item .icon {
+  display: inline-block;
+  transition: transform var(--motion-fast) var(--ease-snappy);
+}
+
+.menu-item:hover .icon,
+.menu-item.active .icon {
+  transform: scale(1.12);
+}
+
+/* ========== 工具栏 ========== */
+.toolbar {
+  animation: fade-up 0.45s var(--ease-smooth) backwards;
+  animation-delay: 0.06s;
+}
+
+/* ========== 个人中心（轻量入场，避免多层动画叠加） ========== */
+.profile-page .page-title {
+  animation: fade-up 0.35s var(--ease-smooth) backwards;
+}
+
+.profile-card,
+.profile-main .panel {
+  animation: fade-up 0.35s var(--ease-smooth) backwards;
+  animation-delay: 0.06s;
+}
+
+.stat-chip {
+  transition:
+    transform var(--motion-fast) var(--ease-smooth),
+    box-shadow var(--motion-fast) var(--ease-smooth);
+}
+
+.stat-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(91, 141, 239, 0.12);
+}
+
+.quick-link {
+  transition:
+    transform var(--motion-fast) var(--ease-snappy),
+    background-color var(--motion-fast) var(--ease-smooth),
+    color var(--motion-fast) var(--ease-smooth);
+}
+
+.quick-link:hover {
+  transform: translateX(3px);
+}
+
+/* ========== 搜索框聚焦 ========== */
+.search-input {
+  transition:
+    border-color var(--motion-fast) var(--ease-smooth),
+    box-shadow var(--motion-fast) var(--ease-smooth),
+    transform var(--motion-fast) var(--ease-smooth);
+}
+
+.search-input:focus {
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 3px rgba(99, 102, 241, 0.14),
+    0 8px 20px rgba(91, 141, 239, 0.12);
+}
+
+/* ========== Element Plus 消息 ========== */
+.el-message {
+  animation: slide-up-soft 0.35s var(--ease-snappy) !important;
+}
+
+.el-message-box {
+  animation: slide-up-soft 0.32s var(--ease-snappy) !important;
+}
+
+/* ========== 减少动效偏好 ========== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

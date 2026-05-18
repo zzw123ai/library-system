@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2 class="page-title">{{ pageTitle }}</h2>
+    <h2 class="page-title anim-fade-up">{{ pageTitle }}</h2>
     
     <!-- 搜索和添加按钮 -->
     <div class="toolbar">
@@ -18,7 +18,7 @@
     </div>
 
     <!-- 图书列表 -->
-    <div class="table-wrap">
+    <div class="table-wrap anim-fade-up anim-delay-1">
       <table class="data-table">
         <thead>
           <tr>
@@ -276,7 +276,6 @@ onMounted(() => {
   border: 1px solid rgba(99, 102, 241, 0.12);
   border-radius: 12px;
   box-shadow: 0 10px 22px rgba(17, 24, 39, 0.06);
-  overflow: auto;
 }
 
 .data-table {
@@ -358,29 +357,6 @@ onMounted(() => {
   padding: 20px;
   border: 1px solid rgba(99, 102, 241, 0.18);
   box-shadow: 0 20px 44px rgba(15, 23, 42, 0.2);
-}
-
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.22s ease;
-}
-
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
-
-.modal-fade-enter-from .modal,
-.modal-fade-leave-to .modal {
-  opacity: 0;
-  transform: translateY(14px) scale(0.98);
-}
-
-.modal-fade-enter-to .modal,
-.modal-fade-leave-from .modal {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
 }
 
 .modal h3 {

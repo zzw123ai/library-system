@@ -1,5 +1,9 @@
 <template>
-  <router-view />
+  <router-view v-slot="{ Component, route }">
+    <transition :name="route.path === '/login' ? 'login-route' : 'route-fade'" mode="out-in">
+      <component :is="Component" :key="route.path" />
+    </transition>
+  </router-view>
 </template>
 
 <script setup>
@@ -45,8 +49,10 @@
   --font-caption: 12px;
   --motion-fast: 0.18s;
   --motion-base: 0.24s;
+  --motion-slow: 0.42s;
   --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-snappy: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
 body {
@@ -76,12 +82,23 @@ select {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #bdd4ff, #9fc0ff);
-  border-radius: 10px;
+  background: rgba(91, 141, 239, 0.28);
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(91, 141, 239, 0.1);
+  background: rgba(91, 141, 239, 0.06);
+}
+
+/* 登录页路由：仅淡入，避免与登录卡片动画叠加卡顿 */
+.login-route-enter-active,
+.login-route-leave-active {
+  transition: opacity 0.22s ease;
+}
+
+.login-route-enter-from,
+.login-route-leave-to {
+  opacity: 0;
 }
 
 .el-card {
@@ -114,12 +131,14 @@ select {
   border: none !important;
 }
 
-.el-button:hover {
-  transform: translateY(-1px);
+.el-button:not(.is-disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(91, 141, 239, 0.22);
 }
 
-.el-button:active {
-  transform: translateY(0) scale(0.98);
+.el-button:not(.is-disabled):active {
+  transform: translateY(0) scale(0.97);
+  transition-duration: 0.1s;
 }
 
 :where(
@@ -148,8 +167,9 @@ select {
   .submit-btn,
   .logout-btn
 ):hover {
-  transform: translateY(-1px);
-  filter: saturate(1.03);
+  transform: translateY(-2px);
+  filter: saturate(1.05);
+  box-shadow: 0 8px 18px rgba(91, 141, 239, 0.2);
 }
 
 :where(

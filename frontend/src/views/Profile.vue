@@ -1,6 +1,6 @@
 <template>
   <div class="profile-page">
-    <h2 class="page-title">个人中心</h2>
+    <h2 class="page-title anim-fade-up">个人中心</h2>
 
     <div class="profile-grid">
       <section class="profile-card">
@@ -205,18 +205,6 @@ onMounted(() => {
 <style scoped>
 .profile-page {
   padding: 2px;
-  animation: profileFadeIn 0.32s ease;
-}
-
-@keyframes profileFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .page-title {
@@ -240,18 +228,6 @@ onMounted(() => {
   padding: 24px 20px;
   text-align: center;
   box-shadow: 0 10px 22px rgba(17, 24, 39, 0.06);
-  animation: cardSlideIn 0.36s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@keyframes cardSlideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
 }
 
 .avatar {
@@ -324,18 +300,6 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  animation: mainSlideIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
-}
-
-@keyframes mainSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .panel {

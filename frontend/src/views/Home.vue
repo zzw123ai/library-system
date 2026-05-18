@@ -1,6 +1,6 @@
 <template>
   <div class="home-page">
-    <div class="sidebar">
+    <div class="sidebar anim-fade-scale">
       <div class="logo">
         <h2>图书馆管理系统</h2>
       </div>
@@ -31,7 +31,7 @@
         <button class="logout-btn" @click="handleLogout">退出登录</button>
       </header>
       <main class="content">
-        <div v-if="$route.path === '/'" class="welcome-card">
+        <div v-if="$route.path === '/'" class="welcome-card anim-fade-up">
           <div v-if="shouldShowOverdueAlert" class="overdue-alert-wrap">
             <el-alert
               type="error"
@@ -86,7 +86,11 @@
           </div>
         </div>
         
-        <router-view v-else />
+        <router-view v-else v-slot="{ Component }">
+          <transition name="route-fade" mode="out-in">
+            <component :is="Component" :key="$route.path" class="page-view" />
+          </transition>
+        </router-view>
       </main>
     </div>
   </div>
@@ -393,7 +397,8 @@ onMounted(() => {
   border: 1px solid rgba(99, 102, 241, 0.12);
   box-shadow: 0 12px 26px rgba(17, 24, 39, 0.05);
   padding: 22px;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .welcome-card {
@@ -456,12 +461,10 @@ onMounted(() => {
   background: linear-gradient(130deg, #f2f7ff, #f8fbff);
   border-radius: 10px;
   border: 1px solid rgba(99, 102, 241, 0.18);
-  transition: 0.2s ease;
 }
 
-.stat-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 22px rgba(79, 70, 229, 0.14);
+.page-view {
+  min-height: 200px;
 }
 
 .stat-value {

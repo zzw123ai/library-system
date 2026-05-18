@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2>{{ pageTitle }}</h2>
+    <h2 class="page-title anim-fade-up">{{ pageTitle }}</h2>
 
     <div v-if="shouldShowOverdueBanner" class="overdue-banner-wrap">
       <button
@@ -36,7 +36,7 @@
     </div>
 
     <!-- 借阅列表 -->
-    <div class="table-wrap">
+    <div class="table-wrap anim-fade-up anim-delay-1">
       <table class="data-table">
         <thead>
           <tr>
@@ -312,6 +312,13 @@ onMounted(() => {
   padding: 2px;
 }
 
+.page-title {
+  margin-bottom: 16px;
+  color: #111827;
+  font-size: 22px;
+  font-weight: 600;
+}
+
 .overdue-banner-wrap {
   position: relative;
   margin-bottom: 16px;
@@ -422,7 +429,6 @@ h2 {
   border: 1px solid rgba(99, 102, 241, 0.12);
   border-radius: 12px;
   box-shadow: 0 10px 22px rgba(17, 24, 39, 0.06);
-  overflow: auto;
 }
 
 .data-table {
@@ -450,11 +456,6 @@ h2 {
 
 .data-table tr {
   border-bottom: 1px solid #e2e8f0;
-  transition: all 0.3s ease;
-}
-
-.data-table tr:hover {
-  background-color: #f6faff;
 }
 
 .data-table tr:last-child {
@@ -555,29 +556,6 @@ h2 {
   width: 480px;
   max-width: 90%;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.22s ease;
-}
-
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
-
-.modal-fade-enter-from .modal,
-.modal-fade-leave-to .modal {
-  opacity: 0;
-  transform: translateY(14px) scale(0.98);
-}
-
-.modal-fade-enter-to .modal,
-.modal-fade-leave-from .modal {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
 }
 
 .modal h3 {

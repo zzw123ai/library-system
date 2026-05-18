@@ -168,6 +168,18 @@ async function handleLogin() {
   grid-template-columns: 1.2fr 1fr;
   gap: 16px;
   align-items: stretch;
+  animation: login-shell-in 0.4s var(--ease-smooth) both;
+}
+
+@keyframes login-shell-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .brand-panel {
@@ -189,7 +201,7 @@ async function handleLogin() {
   border-radius: 50%;
   right: -48px;
   top: -48px;
-  background: rgba(122, 166, 255, 0.25);
+  background: rgba(122, 166, 255, 0.2);
 }
 
 .brand-badge {
@@ -244,6 +256,52 @@ async function handleLogin() {
 .login-card {
   border-radius: 12px;
   padding-top: 2px;
+}
+
+/* 输入框：背景铺满圆角区域，避免 autofill 出现内嵌蓝条 */
+.login-card :deep(.el-input__wrapper) {
+  min-height: 40px;
+  padding: 0 12px;
+  background-color: rgba(237, 244, 255, 0.65);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.2) inset;
+  transition:
+    background-color var(--motion-fast) var(--ease-smooth),
+    box-shadow var(--motion-fast) var(--ease-smooth);
+}
+
+.login-card :deep(.el-input__wrapper:hover) {
+  background-color: rgba(237, 244, 255, 0.85);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.28) inset;
+}
+
+.login-card :deep(.el-input__wrapper.is-focus) {
+  background-color: #edf4ff;
+  box-shadow:
+    0 0 0 1px rgba(91, 141, 239, 0.45) inset,
+    0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.login-card :deep(.el-input__inner) {
+  height: 38px;
+  line-height: 38px;
+  color: #1f2937;
+  -webkit-text-fill-color: #1f2937;
+}
+
+/* 浏览器自动填充：与 wrapper 同色，消除中间白条 */
+.login-card :deep(input:-webkit-autofill),
+.login-card :deep(input:-webkit-autofill:hover),
+.login-card :deep(input:-webkit-autofill:focus),
+.login-card :deep(input:-webkit-autofill:active) {
+  -webkit-box-shadow: 0 0 0 1000px #edf4ff inset !important;
+  box-shadow: 0 0 0 1000px #edf4ff inset !important;
+  -webkit-text-fill-color: #1f2937 !important;
+  caret-color: #1f2937;
+  transition: background-color 99999s ease-out 0s;
+}
+
+.login-card :deep(.el-input__wrapper:has(input:-webkit-autofill)) {
+  background-color: #edf4ff;
 }
 
 .card-header {

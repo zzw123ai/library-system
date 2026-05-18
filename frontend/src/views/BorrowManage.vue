@@ -1,18 +1,29 @@
 <template>
   <div class="container">
-    <h2>借阅管理</h2>
-    
+    <h2>{{ pageTitle }}</h2>
+
+    <el-alert
+      v-if="overdueReminder.overdueCount > 0"
+      type="warning"
+      :closable="false"
+      show-icon
+      class="overdue-banner"
+      :title="overdueBannerTitle"
+    />
+
     <!-- 搜索和添加按钮 -->
     <div class="toolbar">
       <input 
         type="text" 
         v-model="searchKeyword" 
-        placeholder="搜索书名或用户名..." 
+        :placeholder="isAdmin ? '搜索书名或用户名...' : '搜索书名...'" 
         class="search-input"
         @input="loadBorrows"
       />
       <!-- 所有用户都可以借书 -->
-      <button class="add-btn" @click="addBorrowHandler">添加借阅</button>
+      <button class="add-btn" @click="addBorrowHandler">
+        {{ isAdmin ? '添加借阅' : '借阅图书' }}
+      </button>
     </div>
 
     <!-- 借阅列表 -->
@@ -21,19 +32,24 @@
         <tr>
           <th>ID</th>
           <th>图书名称</th>
-          <th>借阅人</th>
+          <th v-if="isAdmin">借阅人</th>
           <th>借阅日期</th>
           <th>应还日期</th>
           <th>实际归还日期</th>
           <th>状态</th>
+          <th>逾期天数</th>
           <th>操作</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="borrow in filteredBorrows" :key="borrow.id">
+        <tr
+          v-for="borrow in filteredBorrows"
+          :key="borrow.id"
+          :class="{ 'row-overdue': borrow.status === 'OVERDUE' }"
+        >
           <td>{{ borrow.id }}</td>
           <td>{{ borrow.bookTitle }}</td>
-          <td>{{ borrow.username }}</td>
+          <td v-if="isAdmin">{{ borrow.username }}</td>
           <td>{{ borrow.borrowDate }}</td>
           <td>{{ borrow.dueDate }}</td>
           <td>{{ borrow.returnDate || '-' }}</td>
@@ -41,9 +57,15 @@
             <span :class="getStatusClass(borrow.status)">{{ getStatusText(borrow.status) }}</span>
           </td>
           <td>
+            <span v-if="borrow.status === 'OVERDUE'" class="overdue-days">
+              {{ borrow.overdueDays ?? '-' }} 天
+            </span>
+            <span v-else>-</span>
+          </td>
+          <td>
             <!-- 管理员可以归还任何书籍，普通用户只能归还自己借的书 -->
             <button 
-              v-if="borrow.status === 'BORROWED' && (isAdmin || borrow.userId === currentUserId)" 
+              v-if="canReturn(borrow)" 
               class="return-btn" 
               @click="returnBook(borrow.id)"
             >
@@ -104,15 +126,29 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { getBorrows, addBorrow, returnBorrow, deleteBorrow as apiDeleteBorrow } from '../api/borrow'
+import { getBorrows, getOverdueReminder, addBorrow, returnBorrow, deleteBorrow as apiDeleteBorrow } from '../api/borrow'
 import { getBooks } from '../api/book'
 import { getUsers } from '../api/user'
 import { isAdmin as checkAdmin, getCurrentUserId } from '../utils/auth'
 
 const borrows = ref([])
 const isAdmin = computed(() => checkAdmin())
+const pageTitle = computed(() => (isAdmin.value ? '借阅管理' : '我的借阅'))
 const currentUserId = computed(() => getCurrentUserId())
 const searchKeyword = ref('')
+const overdueReminder = ref({ overdueCount: 0, records: [] })
+
+const overdueBannerTitle = computed(() => {
+  const n = overdueReminder.value.overdueCount
+  return isAdmin.value
+    ? `当前共有 ${n} 条逾期未还，请及时督促归还`
+    : `您有 ${n} 本书已逾期，请尽快归还`
+})
+
+function canReturn(borrow) {
+  const active = borrow.status === 'BORROWED' || borrow.status === 'OVERDUE'
+  return active && (isAdmin.value || borrow.userId === currentUserId.value)
+}
 
 // 过滤借阅记录：管理员看到所有，普通用户只看到自己的
 const filteredBorrows = computed(() => {
@@ -131,20 +167,32 @@ const formData = ref({
   dueDate: ''
 })
 
+const loadOverdueReminder = async () => {
+  const userId = isAdmin.value ? undefined : currentUserId.value
+  const res = await getOverdueReminder(userId)
+  if (res.data?.code === 200 && res.data.data) {
+    overdueReminder.value = res.data.data
+  }
+}
+
 const loadBorrows = async () => {
   const response = await getBorrows(searchKeyword.value)
   if (response.data && response.data.code === 200) {
     borrows.value = response.data.data
   }
+  await loadOverdueReminder()
 }
 
 const loadBooksAndUsers = async () => {
-  const [booksRes, usersRes] = await Promise.all([getBooks(), getUsers()])
-  if (booksRes.data && booksRes.data.code === 200) {
-    availableBooks.value = booksRes.data.data.filter(b => b.available > 0)
+  const booksRes = await getBooks()
+  if (booksRes.data?.code === 200) {
+    availableBooks.value = booksRes.data.data.filter((b) => b.available > 0)
   }
-  if (usersRes.data && usersRes.data.code === 200) {
-    users.value = usersRes.data.data
+  if (isAdmin.value) {
+    const usersRes = await getUsers()
+    if (usersRes.data?.code === 200) {
+      users.value = usersRes.data.data
+    }
   }
 }
 
@@ -219,6 +267,7 @@ const closeModal = () => {
 
 onMounted(() => {
   loadBorrows()
+  loadOverdueReminder()
 })
 </script>
 
@@ -227,6 +276,23 @@ onMounted(() => {
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
+}
+
+.overdue-banner {
+  margin-bottom: 16px;
+}
+
+.row-overdue {
+  background-color: #fff5f5 !important;
+}
+
+.row-overdue:hover {
+  background-color: #fed7d7 !important;
+}
+
+.overdue-days {
+  color: #e53e3e;
+  font-weight: 600;
 }
 
 h2 {

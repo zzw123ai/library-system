@@ -7,6 +7,15 @@ export function getBorrows(keyword) {
   })
 }
 
+/** 逾期提醒：userId 可选，读者传自己的 id；管理员不传则查全部逾期 */
+export function getOverdueReminder(userId) {
+  return request({
+    url: '/api/borrow/overdue/reminder',
+    method: 'get',
+    params: userId != null ? { userId } : {},
+  })
+}
+
 export function getUserBorrows(userId) {
   return request({
     url: `/api/borrow/user/${userId}`,

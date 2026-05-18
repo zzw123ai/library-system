@@ -13,6 +13,8 @@ call :kill_port 5173 "前端"
 if exist "%~dp0.run" (
     del /f /q "%~dp0.run\browser.opened" 2>nul
     del /f /q "%~dp0.run\launching.lock" 2>nul
+    del /f /q "%~dp0.run\startup.lock" 2>nul
+    del /f /q "%~dp0.run\backend.starting.lock" 2>nul
     rmdir "%~dp0.run" 2>nul
 )
 

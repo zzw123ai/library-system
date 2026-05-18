@@ -12,4 +12,17 @@ public class PasswordUtil {
     public static boolean matches(String rawPassword, String encodedPassword) {
         return encoder.matches(rawPassword, encodedPassword);
     }
+
+    /**
+     * 登录校验：支持 BCrypt 密文；兼容 data.sql 中的明文初始密码。
+     */
+    public static boolean matchesLogin(String rawPassword, String storedPassword) {
+        if (storedPassword == null || rawPassword == null) {
+            return false;
+        }
+        if (storedPassword.startsWith("$2a$") || storedPassword.startsWith("$2b$") || storedPassword.startsWith("$2y$")) {
+            return matches(rawPassword, storedPassword);
+        }
+        return rawPassword.equals(storedPassword);
+    }
 }

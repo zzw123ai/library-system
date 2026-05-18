@@ -67,9 +67,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { getUsers } from '../api/user'
 import { getBooks } from '../api/book'
 import { getBorrows } from '../api/borrow'
+import { getCurrentUser, clearSession, isLoggedIn, isAdmin as checkAdmin } from '../utils/auth.js'
 
 const router = useRouter()
 const userCount = ref(0)
@@ -79,21 +81,10 @@ const borrowCount = ref(0)
 // 当前用户信息
 const currentUser = ref(null)
 
-// 判断是否是管理员（role=1 表示管理员）
-const isAdmin = computed(() => {
-  return currentUser.value?.role === '1' || currentUser.value?.role === 1
-})
+const isAdmin = computed(() => checkAdmin())
 
-// 从 localStorage 获取用户信息
 const loadCurrentUser = () => {
-  try {
-    const userInfo = localStorage.getItem('userInfo')
-    if (userInfo) {
-      currentUser.value = JSON.parse(userInfo)
-    }
-  } catch (e) {
-    console.error('Failed to load user info:', e)
-  }
+  currentUser.value = getCurrentUser()
 }
 
 const currentTitle = computed(() => {
@@ -106,12 +97,20 @@ const currentTitle = computed(() => {
   return titles[router.currentRoute.value.path] || '首页'
 })
 
-const handleLogout = () => {
-  localStorage.removeItem('token')
-  localStorage.removeItem('userInfo')
+async function handleLogout() {
+  try {
+    await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+  } catch {
+    return
+  }
+  clearSession()
   currentUser.value = null
-  alert('退出成功')
-  router.push('/login')
+  ElMessage.success('已退出登录')
+  router.replace('/login')
 }
 
 const loadStats = async () => {
@@ -132,6 +131,10 @@ const loadStats = async () => {
 }
 
 onMounted(() => {
+  if (!isLoggedIn()) {
+    router.replace('/login')
+    return
+  }
   loadCurrentUser()
   loadStats()
 })

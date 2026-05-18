@@ -1,7 +1,4 @@
-<!--
-  图书馆管理系统 - 登录页（Vue3 组合式 API + Element Plus）
-  使用方式：在路由中注册本组件，例如 path: '/login', name: 'Login'
--->
+<!-- 登录页：对接 POST /api/user/login，统一 Result { code, message, data } -->
 <template>
   <div class="login-page">
     <el-card class="login-card" shadow="hover">
@@ -23,7 +20,7 @@
         <el-form-item label="用户名" prop="username">
           <el-input
             v-model="form.username"
-            placeholder="请输入用户名"
+            placeholder="管理员 admin / 读者 user1"
             clearable
             autocomplete="username"
           />
@@ -51,20 +48,20 @@
           </el-button>
         </el-form-item>
       </el-form>
+
+      <p class="hint">演示账号：admin / password（管理员）；user1 / user123（读者）</p>
     </el-card>
   </div>
 </template>
 
 <script setup>
 import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { login as loginApi } from '../api/user.js'
+import { setSession, parseLoginData } from '../utils/auth.js'
 
-/** localStorage 中存放 Token 的键名（可按团队规范修改） */
-const TOKEN_KEY = 'token'
-const USER_INFO_KEY = 'userInfo'
-
+const route = useRoute()
 const router = useRouter()
 const formRef = ref()
 const loading = ref(false)
@@ -79,13 +76,14 @@ const rules = {
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
 }
 
-/**
- * 从登录接口 data 中提取 Token（兼容常见字段名）
- * 若后端暂未返回 token，请与后端约定在 data 中增加 token / accessToken
- */
-function pickToken(data) {
-  if (!data || typeof data !== 'object') return ''
-  return data.token || data.accessToken || ''
+function safeRedirectPath(raw) {
+  if (typeof raw !== 'string' || !raw.startsWith('/') || raw.startsWith('//')) {
+    return null
+  }
+  if (raw === '/login' || raw.startsWith('/login?')) {
+    return null
+  }
+  return raw
 }
 
 async function handleLogin() {
@@ -99,42 +97,36 @@ async function handleLogin() {
   loading.value = true
   try {
     const res = await loginApi({
-        username: form.username.trim(),
-        password: form.password,
-      })
+      username: form.username.trim(),
+      password: form.password,
+    })
 
-      const { code, message, data } = res.data
+    const { code, message, data } = res.data || {}
 
-      if (code === 200) {
-      const token = pickToken(data)
-      if (token) {
-        localStorage.setItem(TOKEN_KEY, token)
-      } else {
-        // 当前仓库后端示例仅返回用户对象，无 JWT：不写入假 Token，仅提示约定字段
-        ElMessage.warning(
-          '登录成功，但响应中未找到 token/accessToken 字段，请后端在登录成功 data 中返回 Token 后再写入 localStorage'
-        )
+    if (code === 200 && data) {
+      const { token, user } = parseLoginData(data)
+      if (!user?.username || user.role === '') {
+        ElMessage.error('登录响应数据不完整，请联系后端检查接口')
+        return
       }
-      
-      // 保存用户信息到 localStorage
-      if (data && typeof data === 'object') {
-        localStorage.setItem(USER_INFO_KEY, JSON.stringify(data))
+      if (!token) {
+        ElMessage.error('登录响应缺少 token')
+        return
       }
 
+      setSession({ token, user })
       ElMessage.success(message || '登录成功')
 
-      // 优先跳转到名为 Home 的路由；若未配置则回退到根路径
-      try {
-        await router.push({ name: 'Home' })
-      } catch {
-        await router.push({ path: '/' })
-      }
+      const redirect = safeRedirectPath(route.query.redirect)
+      await router.replace(redirect || { path: '/' })
     } else {
-      ElMessage.error(message || '登录失败')
+      ElMessage.error(message || '用户名或密码错误')
     }
-  } catch {
-    // 网络或 4xx/5xx：request 拦截器已提示时可不再重复；此处保留以便业务自定义
-    // ElMessage.error 已在 utils/request.js 中处理通用错误
+  } catch (err) {
+    const msg = err.response?.data?.message
+    if (msg) {
+      ElMessage.error(msg)
+    }
   } finally {
     loading.value = false
   }
@@ -178,5 +170,12 @@ async function handleLogin() {
 .login-btn {
   width: 100%;
   margin-top: 4px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 12px;
+  color: #909399;
+  line-height: 1.5;
 }
 </style>

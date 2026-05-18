@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.library.system.common.PasswordUtil;
 import com.library.system.entity.User;
 import com.library.system.mapper.UserMapper;
 
@@ -15,11 +16,14 @@ public class UserService {
     private UserMapper userMapper;
 
     public User login(String username, String password) {
-        User user = userMapper.findByUsername(username);
-        if (user != null && password.equals(user.getPassword())) {
-            return user;
+        if (username == null || username.isBlank() || password == null) {
+            return null;
         }
-        return null;
+        User user = userMapper.findByUsername(username.trim());
+        if (user == null) {
+            return null;
+        }
+        return PasswordUtil.matchesLogin(password, user.getPassword()) ? user : null;
     }
 
     public List<User> findAll() {

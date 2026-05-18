@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2>用户管理</h2>
+    <h2 class="page-title">用户管理</h2>
     
     <!-- 搜索和添加按钮 -->
     <div class="toolbar">
@@ -15,27 +15,29 @@
     </div>
 
     <!-- 用户列表 -->
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>用户名</th>
-          <th>角色</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user.id">
-          <td>{{ user.id }}</td>
-          <td>{{ user.username }}</td>
-          <td>{{ user.role === '1' ? '管理员' : '普通用户' }}</td>
-          <td>
-            <button class="edit-btn" @click="editUser(user)">编辑</button>
-            <button class="delete-btn" @click="deleteUser(user.id)">删除</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>用户名</th>
+            <th>角色</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in users" :key="user.id">
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.role === '1' ? '管理员' : '读者' }}</td>
+            <td>
+              <button class="edit-btn" @click="editUser(user)">编辑</button>
+              <button class="delete-btn" @click="deleteUser(user.id)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!-- 添加/编辑模态框 -->
     <div v-if="showAddModal" class="modal-overlay" @click.self="closeModal">
@@ -152,107 +154,126 @@ onMounted(() => {
 
 <style scoped>
 .container {
-  padding: 0;
+  padding: 2px;
 }
 
-h2 {
-  margin-bottom: 25px;
-  color: #2c3e50;
-  font-size: 24px;
+.page-title {
+  margin-bottom: 16px;
+  color: #111827;
+  font-size: 22px;
   font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .toolbar {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 25px;
+  margin-bottom: 14px;
   align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .search-input {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  width: 250px;
+  min-width: 260px;
+  max-width: 400px;
+  width: 40%;
+  padding: 10px 12px;
+  border: 1px solid rgba(99, 102, 241, 0.24);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  color: #111827;
+  box-shadow: 0 8px 16px rgba(17, 24, 39, 0.04);
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
 .add-btn {
-  padding: 8px 16px;
-  background-color: #3498db;
-  color: white;
+  padding: 8px 14px;
+  background: linear-gradient(120deg, #5b8def, #7aa6ff);
+  color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  font-size: 13px;
+  font-weight: 600;
+  transition: 0.2s ease;
+  box-shadow: 0 8px 16px rgba(91, 141, 239, 0.2);
 }
 
 .add-btn:hover {
-  background-color: #2980b9;
+  transform: translateY(-1px);
 }
 
-.table-container {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  overflow: hidden;
+.table-wrap {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 10px 22px rgba(17, 24, 39, 0.06);
+  overflow: auto;
 }
 
 .data-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 660px;
 }
 
 .data-table th, .data-table td {
-  padding: 12px 15px;
+  padding: 12px 14px;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 }
 
 .data-table th {
-  background-color: #f8f9fa;
+  background: #edf4ff;
+  color: #355ea8;
   font-weight: 600;
+  font-size: 13px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .data-table tbody tr:hover {
-  background-color: #f8f9fa;
+  background: #f8faff;
 }
 
 .edit-btn {
-  padding: 8px 16px;
-  background-color: #f39c12;
-  color: white;
+  padding: 7px 10px;
+  background: linear-gradient(120deg, #9ab7e6, #86abd8);
+  color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  margin-right: 5px;
-  transition: all 0.3s ease;
+  font-size: 12px;
+  margin-right: 8px;
+  transition: 0.2s ease;
 }
 
 .edit-btn:hover {
-  background-color: #d68910;
+  transform: translateY(-1px);
 }
 
 .delete-btn {
-  padding: 8px 16px;
-  background-color: #e74c3c;
-  color: white;
+  padding: 7px 10px;
+  background: linear-gradient(120deg, #e9a0aa, #e58f9b);
+  color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  font-size: 12px;
+  transition: 0.2s ease;
 }
 
 .delete-btn:hover {
-  background-color: #c0392b;
+  transform: translateY(-1px);
 }
 
 .modal-overlay {
@@ -261,74 +282,91 @@ h2 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(15, 23, 42, 0.48);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
 }
 
 .modal {
-  width: 450px;
+  width: min(460px, 94vw);
   background: #fff;
-  border-radius: 8px;
-  padding: 25px;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.2);
 }
 
 .modal h3 {
-  margin-bottom: 20px;
-  font-size: 20px;
-  color: #2c3e50;
+  margin-bottom: 14px;
+  font-size: 18px;
+  color: #111827;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
+  font-size: 13px;
   font-weight: 500;
 }
 
 .form-group input, .form-group select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 9px 11px;
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  border-radius: 8px;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14);
 }
 
 .modal-actions {
-  margin-top: 20px;
+  margin-top: 16px;
   text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .cancel-btn {
-  padding: 8px 16px;
-  background-color: #95a5a6;
-  color: white;
+  padding: 8px 12px;
+  background-color: #e5e7eb;
+  color: #374151;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .cancel-btn:hover {
-  background-color: #7f8c8d;
+  background-color: #d1d5db;
 }
 
 .submit-btn {
-  padding: 8px 16px;
-  background-color: #3498db;
-  color: white;
+  padding: 8px 14px;
+  background: linear-gradient(120deg, #5b8def, #7aa6ff);
+  color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .submit-btn:hover {
-  background-color: #2980b9;
+  transform: translateY(-1px);
 }
 </style>

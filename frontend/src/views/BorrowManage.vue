@@ -27,56 +27,58 @@
     </div>
 
     <!-- 借阅列表 -->
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>图书名称</th>
-          <th v-if="isAdmin">借阅人</th>
-          <th>借阅日期</th>
-          <th>应还日期</th>
-          <th>实际归还日期</th>
-          <th>状态</th>
-          <th>逾期天数</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="borrow in filteredBorrows"
-          :key="borrow.id"
-          :class="{ 'row-overdue': borrow.status === 'OVERDUE' }"
-        >
-          <td>{{ borrow.id }}</td>
-          <td>{{ borrow.bookTitle }}</td>
-          <td v-if="isAdmin">{{ borrow.username }}</td>
-          <td>{{ borrow.borrowDate }}</td>
-          <td>{{ borrow.dueDate }}</td>
-          <td>{{ borrow.returnDate || '-' }}</td>
-          <td>
-            <span :class="getStatusClass(borrow.status)">{{ getStatusText(borrow.status) }}</span>
-          </td>
-          <td>
-            <span v-if="borrow.status === 'OVERDUE'" class="overdue-days">
-              {{ borrow.overdueDays ?? '-' }} 天
-            </span>
-            <span v-else>-</span>
-          </td>
-          <td>
-            <!-- 管理员可以归还任何书籍，普通用户只能归还自己借的书 -->
-            <button 
-              v-if="canReturn(borrow)" 
-              class="return-btn" 
-              @click="returnBook(borrow.id)"
-            >
-              归还
-            </button>
-            <!-- 只有管理员可以删除借阅记录 -->
-            <button v-if="isAdmin" class="delete-btn" @click="deleteBorrow(borrow.id)">删除</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>图书名称</th>
+            <th v-if="isAdmin">借阅人</th>
+            <th>借阅日期</th>
+            <th>应还日期</th>
+            <th>实际归还日期</th>
+            <th>状态</th>
+            <th>逾期天数</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="borrow in filteredBorrows"
+            :key="borrow.id"
+            :class="{ 'row-overdue': borrow.status === 'OVERDUE' }"
+          >
+            <td>{{ borrow.id }}</td>
+            <td>{{ borrow.bookTitle }}</td>
+            <td v-if="isAdmin">{{ borrow.username }}</td>
+            <td>{{ borrow.borrowDate }}</td>
+            <td>{{ borrow.dueDate }}</td>
+            <td>{{ borrow.returnDate || '-' }}</td>
+            <td>
+              <span :class="getStatusClass(borrow.status)">{{ getStatusText(borrow.status) }}</span>
+            </td>
+            <td>
+              <span v-if="borrow.status === 'OVERDUE'" class="overdue-days">
+                {{ borrow.overdueDays ?? '-' }} 天
+              </span>
+              <span v-else>-</span>
+            </td>
+            <td>
+              <!-- 管理员可以归还任何书籍，普通用户只能归还自己借的书 -->
+              <button
+                v-if="canReturn(borrow)"
+                class="return-btn"
+                @click="returnBook(borrow.id)"
+              >
+                归还
+              </button>
+              <!-- 只有管理员可以删除借阅记录 -->
+              <button v-if="isAdmin" class="delete-btn" @click="deleteBorrow(borrow.id)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!-- 添加借阅模态框 -->
     <div v-if="showAddModal" class="modal-overlay" @click.self="closeModal">
@@ -273,9 +275,7 @@ onMounted(() => {
 
 <style scoped>
 .container {
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 2px;
 }
 
 .overdue-banner {
@@ -296,28 +296,27 @@ onMounted(() => {
 }
 
 h2 {
-  margin-bottom: 24px;
-  color: #1a202c;
-  font-size: 24px;
+  margin-bottom: 16px;
+  color: #111827;
+  font-size: 22px;
   font-weight: 600;
-  border-left: 4px solid #4299e1;
-  padding-left: 12px;
 }
 
 .toolbar {
   display: flex;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 14px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .search-input {
   flex: 1;
-  max-width: 350px;
-  padding: 12px 16px;
+  max-width: 420px;
+  padding: 10px 12px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   transition: all 0.3s ease;
   background-color: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -325,59 +324,57 @@ h2 {
 
 .search-input:focus {
   outline: none;
-  border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  border-color: #5b8def;
+  box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.12);
 }
 
 .add-btn {
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  padding: 8px 14px;
+  background: linear-gradient(120deg, #5b8def, #7aa6ff);
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 16px rgba(91, 141, 239, 0.2);
 }
 
 .add-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+  box-shadow: 0 6px 12px rgba(91, 141, 239, 0.24);
+}
+
+.table-wrap {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 10px 22px rgba(17, 24, 39, 0.06);
+  overflow: auto;
 }
 
 .data-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  margin-top: 24px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  min-width: 920px;
 }
 
 .data-table th, .data-table td {
-  padding: 16px 20px;
+  padding: 12px 14px;
   text-align: left;
 }
 
 .data-table th {
-  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-  color: #fff;
+  background: #edf4ff;
+  color: #355ea8;
   font-weight: 600;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.data-table th:first-child {
-  border-radius: 12px 0 0 0;
-}
-
-.data-table th:last-child {
-  border-radius: 0 12px 0 0;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .data-table tr {
@@ -386,16 +383,8 @@ h2 {
 }
 
 .data-table tr:hover {
-  background-color: #f7fafc;
+  background-color: #f6faff;
   transform: scale(1.002);
-}
-
-.data-table tr:last-child td:first-child {
-  border-radius: 0 0 0 12px;
-}
-
-.data-table tr:last-child td:last-child {
-  border-radius: 0 0 12px 0;
 }
 
 .data-table tr:last-child {
@@ -404,7 +393,7 @@ h2 {
 
 .data-table td {
   color: #4a5568;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .data-table td:first-child {
@@ -413,67 +402,67 @@ h2 {
 }
 
 .status-borrowed {
-  background: linear-gradient(135deg, #ecc94b 0%, #d69e2e 100%);
+  background: linear-gradient(135deg, #ffe4b3 0%, #f9d99c 100%);
   padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
+  border-radius: 8px;
+  font-size: 11px;
   font-weight: 500;
   color: #744210;
 }
 
 .status-returned {
-  background: linear-gradient(135deg, #68d391 0%, #38a169 100%);
+  background: linear-gradient(135deg, #c6efe0 0%, #afe5d3 100%);
   padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
+  border-radius: 8px;
+  font-size: 11px;
   font-weight: 500;
-  color: white;
+  color: #1f6f5d;
 }
 
 .status-overdue {
-  background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+  background: linear-gradient(135deg, #ffd0d8 0%, #fbbdc8 100%);
   padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
+  border-radius: 8px;
+  font-size: 11px;
   font-weight: 500;
-  color: white;
+  color: #a14558;
 }
 
 .return-btn {
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+  padding: 7px 10px;
+  background: linear-gradient(135deg, #9ab7e6 0%, #86abd8 100%);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   margin-right: 8px;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(237, 137, 54, 0.3);
+  box-shadow: 0 2px 6px rgba(134, 171, 216, 0.26);
 }
 
 .return-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(237, 137, 54, 0.4);
+  box-shadow: 0 4px 8px rgba(134, 171, 216, 0.32);
 }
 
 .delete-btn {
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+  padding: 7px 10px;
+  background: linear-gradient(135deg, #e9a0aa 0%, #e58f9b 100%);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(252, 129, 129, 0.3);
+  box-shadow: 0 2px 6px rgba(229, 143, 155, 0.25);
 }
 
 .delete-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(252, 129, 129, 0.4);
+  box-shadow: 0 4px 8px rgba(229, 143, 155, 0.32);
 }
 
 .modal-overlay {
@@ -497,8 +486,8 @@ h2 {
 
 .modal {
   background-color: #fff;
-  padding: 28px;
-  border-radius: 16px;
+  padding: 20px;
+  border-radius: 12px;
   width: 480px;
   max-width: 90%;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
@@ -517,31 +506,31 @@ h2 {
 }
 
 .modal h3 {
-  margin-bottom: 24px;
+  margin-bottom: 14px;
   color: #1a202c;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   text-align: center;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   color: #4a5568;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .form-group input, .form-group select {
   width: 100%;
-  padding: 12px 16px;
+  padding: 9px 11px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   transition: all 0.3s ease;
   background-color: #fff;
   box-sizing: border-box;
@@ -549,16 +538,16 @@ h2 {
 
 .form-group input:focus, .form-group select:focus {
   outline: none;
-  border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  border-color: #5b8def;
+  box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.12);
 }
 
 .readonly-value {
   width: 100%;
-  padding: 12px 16px;
+  padding: 9px 11px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   background-color: #f7fafc;
   color: #718096;
   box-sizing: border-box;
@@ -567,18 +556,18 @@ h2 {
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 28px;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .cancel-btn {
-  padding: 12px 24px;
+  padding: 8px 12px;
   background-color: #e2e8f0;
   color: #4a5568;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   transition: all 0.3s ease;
 }
@@ -588,20 +577,20 @@ h2 {
 }
 
 .submit-btn {
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  padding: 8px 14px;
+  background: linear-gradient(120deg, #5b8def 0%, #7aa6ff 100%);
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
+  box-shadow: 0 2px 8px rgba(91, 141, 239, 0.24);
 }
 
 .submit-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+  box-shadow: 0 4px 12px rgba(91, 141, 239, 0.3);
 }
 </style>

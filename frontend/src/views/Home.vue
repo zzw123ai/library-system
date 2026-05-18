@@ -188,181 +188,205 @@ onMounted(() => {
 .home-page {
   display: flex;
   min-height: 100vh;
-  background-color: #f7fafc;
+  background: transparent;
 }
 
 .sidebar {
-  width: 220px;
-  background-color: #2c3e50;
-  color: white;
+  width: 248px;
+  margin: 16px;
+  background: linear-gradient(180deg, #f5f9ff, #eef5ff 45%, #e8f1ff);
+  color: #1f2937;
+  border: 1px solid rgba(91, 141, 239, 0.16);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  padding: 20px 0;
-  transition: all 0.3s ease;
+  padding: 20px 0 16px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
 }
 
 .logo {
-  text-align: center;
-  padding: 20px 0;
-  border-bottom: 1px solid #34495e;
-  margin-bottom: 20px;
+  padding: 6px 20px 14px;
+  border-bottom: 1px solid rgba(91, 141, 239, 0.18);
+  margin-bottom: 12px;
 }
 
 .logo h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .menu {
   flex: 1;
-  padding: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 12px 25px;
-  color: #bdc3c7;
+  gap: 10px;
+  padding: 10px 12px;
+  color: #4b5563;
   text-decoration: none;
-  transition: all 0.3s ease;
-  font-size: 16px;
+  border-radius: 8px;
+  transition: 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .menu-item:hover,
 .menu-item.active {
-  background-color: #34495e;
-  color: white;
-  border-left: 4px solid #3498db;
+  background: rgba(91, 141, 239, 0.12);
+  color: #1f2937;
+  transform: translateX(2px);
 }
 
 .icon {
-  margin-right: 12px;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .user-info {
-  padding: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 0 12px;
+  padding: 12px;
+  border-top: 1px solid rgba(91, 141, 239, 0.2);
+  background: rgba(255, 255, 255, 0.62);
+  border-radius: 10px;
   text-align: center;
 }
 
 .user-info .username {
   display: block;
-  font-size: 14px;
-  font-weight: 500;
-  color: #e2e8f0;
-  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 6px;
 }
 
 .user-info .role {
   display: inline-block;
-  padding: 4px 12px;
-  font-size: 12px;
-  border-radius: 20px;
-  background: rgba(66, 153, 225, 0.2);
-  color: #4299e1;
+  padding: 4px 10px;
+  font-size: 11px;
+  border-radius: 8px;
+  background: rgba(91, 141, 239, 0.12);
+  color: #355ea8;
 }
 
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin: 16px 16px 16px 0;
+  gap: 12px;
 }
 
 .header {
-  background-color: white;
-  padding: 15px 30px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  border-radius: 12px;
+  padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.06);
 }
 
 .header-title {
   font-size: 18px;
   font-weight: 600;
-  color: #2c3e50;
+  color: #111827;
 }
 
 .logout-btn {
-  padding: 8px 16px;
-  background-color: #e74c3c;
-  color: white;
+  padding: 8px 12px;
+  background: linear-gradient(120deg, #8aa9dd, #7f9ac8);
+  color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  font-size: 12px;
+  font-weight: 600;
+  transition: 0.2s ease;
 }
 
 .logout-btn:hover {
-  background-color: #c0392b;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 14px rgba(127, 154, 200, 0.28);
 }
 
 .content {
   flex: 1;
-  padding: 30px;
+  background: rgba(255, 255, 255, 0.76);
+  border-radius: 12px;
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  box-shadow: 0 12px 26px rgba(17, 24, 39, 0.05);
+  padding: 22px;
+  overflow: auto;
 }
 
 .welcome-card {
-  background-color: white;
-  padding: 36px;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), #ffffff);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(99, 102, 241, 0.12);
 }
 
 .welcome-card h2 {
-  margin-bottom: 12px;
-  color: #1a202c;
+  margin-bottom: 10px;
+  color: #111827;
   font-size: 24px;
   font-weight: 600;
 }
 
 .welcome-card p {
-  color: #718096;
-  margin-bottom: 32px;
-  font-size: 15px;
-  line-height: 1.6;
+  color: #4b5563;
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.7;
 }
 
 .overdue-alert {
   margin-bottom: 24px;
+  border-radius: 8px;
 }
 
 .overdue-list {
   margin: 8px 0 12px;
   padding-left: 20px;
-  color: #606266;
+  color: #374151;
   font-size: 14px;
   line-height: 1.8;
 }
 
 .stats {
-  display: flex;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
 }
 
 .stat-item {
-  flex: 1;
-  text-align: center;
-  padding: 28px 20px;
-  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  border: 1px solid #e2e8f0;
+  text-align: left;
+  padding: 20px 16px;
+  background: linear-gradient(130deg, #f2f7ff, #f8fbff);
+  border-radius: 10px;
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  transition: 0.2s ease;
 }
 
 .stat-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 22px rgba(79, 70, 229, 0.14);
 }
 
 .stat-value {
   display: block;
-  font-size: 42px;
+  font-size: 34px;
   font-weight: 700;
-  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  background: linear-gradient(120deg, #5b8def, #7aa6ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -370,10 +394,32 @@ onMounted(() => {
 
 .stat-label {
   display: block;
-  color: #718096;
+  color: #4b5563;
   margin-top: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
 }
 
+@media (max-width: 980px) {
+  .sidebar {
+    width: 210px;
+    margin-right: 10px;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 820px) {
+  .home-page {
+    flex-direction: column;
+  }
+
+  .sidebar,
+  .main-content {
+    width: calc(100% - 24px);
+    margin: 12px;
+  }
+}
 </style>

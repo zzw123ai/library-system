@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2>图书管理</h2>
+    <h2>{{ pageTitle }}</h2>
     
     <!-- 搜索和添加按钮 -->
     <div class="toolbar">
@@ -88,6 +88,7 @@ import { isAdmin as checkAdmin } from '../utils/auth'
 
 const books = ref([])
 const isAdmin = computed(() => checkAdmin())
+const pageTitle = computed(() => (isAdmin.value ? '图书管理' : '图书检索'))
 const searchKeyword = ref('')
 const showAddModal = ref(false)
 const isEdit = ref(false)

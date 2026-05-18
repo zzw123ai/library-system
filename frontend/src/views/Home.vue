@@ -5,30 +5,21 @@
         <h2>图书馆管理系统</h2>
       </div>
       <nav class="menu">
-        <router-link to="/" class="menu-item" :class="{ active: $route.path === '/' }">
-          <span class="icon">🏠</span>
-          <span>首页</span>
-        </router-link>
-        <!-- 管理员可见：用户管理 -->
-        <router-link v-if="isAdmin" to="/users" class="menu-item" :class="{ active: $route.path === '/users' }">
-          <span class="icon">👥</span>
-          <span>用户管理</span>
-        </router-link>
-        <!-- 所有用户可见：图书管理 -->
-        <router-link to="/books" class="menu-item" :class="{ active: $route.path === '/books' }">
-          <span class="icon">📚</span>
-          <span>图书管理</span>
-        </router-link>
-        <!-- 所有用户可见：借阅管理 -->
-        <router-link to="/borrows" class="menu-item" :class="{ active: $route.path === '/borrows' }">
-          <span class="icon">📖</span>
-          <span>借阅管理</span>
+        <router-link
+          v-for="item in visibleMenus"
+          :key="item.path"
+          :to="item.path"
+          class="menu-item"
+          :class="{ active: $route.path === item.path }"
+        >
+          <span class="icon">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
         </router-link>
       </nav>
       <!-- 当前用户信息 -->
       <div class="user-info">
         <span class="username">{{ currentUser?.username }}</span>
-        <span class="role">{{ isAdmin ? '管理员' : '普通用户' }}</span>
+        <span class="role">{{ isAdmin ? '管理员' : '读者' }}</span>
       </div>
     </div>
     <div class="main-content">
@@ -40,20 +31,46 @@
       </header>
       <main class="content">
         <div v-if="$route.path === '/'" class="welcome-card">
+          <el-alert
+            v-if="overdueReminder.overdueCount > 0"
+            type="error"
+            :closable="false"
+            show-icon
+            class="overdue-alert"
+            :title="overdueAlertTitle"
+          >
+            <template #default>
+              <ul class="overdue-list">
+                <li v-for="item in overdueReminder.records" :key="item.id">
+                  《{{ item.bookTitle }}》— 应还 {{ item.dueDate }}，已逾期 {{ item.overdueDays }} 天
+                  <span v-if="isAdmin">（借阅人：{{ item.username }}）</span>
+                </li>
+              </ul>
+              <el-button type="primary" link @click="goBorrows">
+                {{ isAdmin ? '前往借阅管理归还' : '前往我的借阅归还' }}
+              </el-button>
+            </template>
+          </el-alert>
+
           <h2>欢迎使用图书馆管理系统！</h2>
-          <p>这是一个功能完整的图书馆管理系统，支持用户管理、图书管理和借阅管理。</p>
+          <p v-if="isAdmin">
+            管理员工作台：可进行用户管理、图书管理与全馆借阅管理。
+          </p>
+          <p v-else>
+            读者工作台：可检索馆藏图书、办理借阅与归还，并查看个人借阅记录。
+          </p>
           <div class="stats">
-            <div class="stat-item">
+            <div v-if="isAdmin" class="stat-item">
               <span class="stat-value">{{ userCount }}</span>
               <span class="stat-label">用户数量</span>
             </div>
             <div class="stat-item">
               <span class="stat-value">{{ bookCount }}</span>
-              <span class="stat-label">图书数量</span>
+              <span class="stat-label">馆藏图书</span>
             </div>
             <div class="stat-item">
               <span class="stat-value">{{ borrowCount }}</span>
-              <span class="stat-label">借阅数量</span>
+              <span class="stat-label">{{ isAdmin ? '借阅记录' : '我的借阅' }}</span>
             </div>
           </div>
         </div>
@@ -70,32 +87,42 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getUsers } from '../api/user'
 import { getBooks } from '../api/book'
-import { getBorrows } from '../api/borrow'
-import { getCurrentUser, clearSession, isLoggedIn, isAdmin as checkAdmin } from '../utils/auth.js'
+import { getBorrows, getOverdueReminder } from '../api/borrow'
+import { getCurrentUser, clearSession, isLoggedIn, isAdmin as checkAdmin, getCurrentUserId } from '../utils/auth.js'
+import { getVisibleMenus, getPageTitle } from '../config/menu.js'
 
 const router = useRouter()
 const userCount = ref(0)
 const bookCount = ref(0)
 const borrowCount = ref(0)
+const overdueReminder = ref({ overdueCount: 0, records: [] })
 
 // 当前用户信息
 const currentUser = ref(null)
 
 const isAdmin = computed(() => checkAdmin())
 
+const visibleMenus = computed(() => getVisibleMenus(isAdmin.value))
+
+const overdueAlertTitle = computed(() => {
+  const n = overdueReminder.value.overdueCount
+  if (isAdmin.value) {
+    return `逾期提醒：全馆共有 ${n} 条逾期未还记录`
+  }
+  return `逾期提醒：您有 ${n} 本书已逾期，请尽快归还`
+})
+
+function goBorrows() {
+  router.push('/borrows')
+}
+
 const loadCurrentUser = () => {
   currentUser.value = getCurrentUser()
 }
 
-const currentTitle = computed(() => {
-  const titles = {
-    '/': '首页',
-    '/users': '用户管理',
-    '/books': '图书管理',
-    '/borrows': '借阅管理'
-  }
-  return titles[router.currentRoute.value.path] || '首页'
-})
+const currentTitle = computed(() =>
+  getPageTitle(router.currentRoute.value.path, isAdmin.value)
+)
 
 async function handleLogout() {
   try {
@@ -113,20 +140,36 @@ async function handleLogout() {
   router.replace('/login')
 }
 
-const loadStats = async () => {
-  const [usersRes, booksRes, borrowsRes] = await Promise.all([
-    getUsers(),
-    getBooks(),
-    getBorrows()
-  ])
-  if (usersRes.data && usersRes.data.code === 200) {
-    userCount.value = usersRes.data.data.length
+const loadOverdueReminder = async () => {
+  const userId = isAdmin.value ? undefined : getCurrentUserId()
+  const res = await getOverdueReminder(userId)
+  if (res.data?.code === 200 && res.data.data) {
+    overdueReminder.value = res.data.data
   }
-  if (booksRes.data && booksRes.data.code === 200) {
+}
+
+const loadStats = async () => {
+  const booksRes = await getBooks()
+  if (booksRes.data?.code === 200) {
     bookCount.value = booksRes.data.data.length
   }
-  if (borrowsRes.data && borrowsRes.data.code === 200) {
-    borrowCount.value = borrowsRes.data.data.length
+
+  const borrowsRes = await getBorrows()
+  if (borrowsRes.data?.code === 200) {
+    const list = borrowsRes.data.data
+    if (isAdmin.value) {
+      borrowCount.value = list.length
+    } else {
+      const uid = getCurrentUserId()
+      borrowCount.value = list.filter((b) => b.userId === uid).length
+    }
+  }
+
+  if (isAdmin.value) {
+    const usersRes = await getUsers()
+    if (usersRes.data?.code === 200) {
+      userCount.value = usersRes.data.data.length
+    }
   }
 }
 
@@ -137,6 +180,7 @@ onMounted(() => {
   }
   loadCurrentUser()
   loadStats()
+  loadOverdueReminder()
 })
 </script>
 
@@ -280,6 +324,18 @@ onMounted(() => {
   margin-bottom: 32px;
   font-size: 15px;
   line-height: 1.6;
+}
+
+.overdue-alert {
+  margin-bottom: 24px;
+}
+
+.overdue-list {
+  margin: 8px 0 12px;
+  padding-left: 20px;
+  color: #606266;
+  font-size: 14px;
+  line-height: 1.8;
 }
 
 .stats {

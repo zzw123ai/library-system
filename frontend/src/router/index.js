@@ -3,6 +3,7 @@ import { ElMessage } from 'element-plus'
 import Login from '../views/Login.vue'
 import Home from '../views/Home.vue'
 import { isLoggedIn, isAdmin } from '../utils/auth.js'
+import { getPageTitle } from '../config/menu.js'
 
 const routes = [
   {
@@ -27,13 +28,13 @@ const routes = [
         path: 'books',
         name: 'BookManage',
         component: () => import('../views/BookManage.vue'),
-        meta: { requiresAuth: true, title: '图书管理' },
+        meta: { requiresAuth: true, title: '图书管理', readerTitle: '图书检索' },
       },
       {
         path: 'borrows',
         name: 'BorrowManage',
         component: () => import('../views/BorrowManage.vue'),
-        meta: { requiresAuth: true, title: '借阅管理' },
+        meta: { requiresAuth: true, title: '借阅管理', readerTitle: '我的借阅' },
       },
     ],
   },
@@ -45,8 +46,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, _from, next) => {
-  if (to.meta.title) {
-    document.title = `${to.meta.title} - 图书馆管理系统`
+  const pageTitle = getPageTitle(to.path, isAdmin()) || to.meta.title
+  if (pageTitle) {
+    document.title = `${pageTitle} - 图书馆管理系统`
   }
 
   if (to.path === '/login') {

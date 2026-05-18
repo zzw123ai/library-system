@@ -40,32 +40,34 @@
     </div>
 
     <!-- 添加/编辑模态框 -->
-    <div v-if="showAddModal" class="modal-overlay" @click.self="closeModal">
-      <div class="modal">
-        <h3>{{ isEdit ? '编辑用户' : '添加用户' }}</h3>
-        <form @submit.prevent="saveUser">
-          <div class="form-group">
-            <label>用户名</label>
-            <input type="text" v-model="formData.username" required />
-          </div>
-          <div class="form-group">
-            <label>密码</label>
-            <input type="password" v-model="formData.password" :required="!isEdit" :placeholder="isEdit ? '不填则保持原密码' : ''" />
-          </div>
-          <div class="form-group">
-            <label>角色</label>
-            <select v-model="formData.role">
-              <option value="0">普通用户</option>
-              <option value="1">管理员</option>
-            </select>
-          </div>
-          <div class="modal-actions">
-            <button type="button" class="cancel-btn" @click="closeModal">取消</button>
-            <button type="submit" class="submit-btn">保存</button>
-          </div>
-        </form>
+    <transition name="modal-fade">
+      <div v-if="showAddModal" class="modal-overlay" @click.self="closeModal">
+        <div class="modal">
+          <h3>{{ isEdit ? '编辑用户' : '添加用户' }}</h3>
+          <form @submit.prevent="saveUser">
+            <div class="form-group">
+              <label>用户名</label>
+              <input type="text" v-model="formData.username" required />
+            </div>
+            <div class="form-group">
+              <label>密码</label>
+              <input type="password" v-model="formData.password" :required="!isEdit" :placeholder="isEdit ? '不填则保持原密码' : ''" />
+            </div>
+            <div class="form-group">
+              <label>角色</label>
+              <select v-model="formData.role">
+                <option value="0">普通用户</option>
+                <option value="1">管理员</option>
+              </select>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="cancel-btn" @click="closeModal">取消</button>
+              <button type="submit" class="submit-btn">保存</button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -297,6 +299,29 @@ onMounted(() => {
   padding: 20px;
   border: 1px solid rgba(99, 102, 241, 0.2);
   box-shadow: 0 20px 44px rgba(15, 23, 42, 0.2);
+}
+
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.22s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .modal,
+.modal-fade-leave-to .modal {
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+}
+
+.modal-fade-enter-to .modal,
+.modal-fade-leave-from .modal {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
 }
 
 .modal h3 {

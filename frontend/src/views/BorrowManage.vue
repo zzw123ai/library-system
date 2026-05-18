@@ -2,14 +2,23 @@
   <div class="container">
     <h2>{{ pageTitle }}</h2>
 
-    <el-alert
-      v-if="overdueReminder.overdueCount > 0"
-      type="warning"
-      :closable="false"
-      show-icon
-      class="overdue-banner"
-      :title="overdueBannerTitle"
-    />
+    <div v-if="shouldShowOverdueBanner" class="overdue-banner-wrap">
+      <button
+        class="overdue-dismiss-btn"
+        type="button"
+        title="关闭提醒"
+        @click="dismissOverdueBanner"
+      >
+        <el-icon><Close /></el-icon>
+      </button>
+      <el-alert
+        type="warning"
+        :closable="false"
+        :show-icon="false"
+        class="overdue-banner"
+        :title="overdueBannerTitle"
+      />
+    </div>
 
     <!-- 搜索和添加按钮 -->
     <div class="toolbar">
@@ -81,53 +90,56 @@
     </div>
 
     <!-- 添加借阅模态框 -->
-    <div v-if="showAddModal" class="modal-overlay" @click.self="closeModal">
-      <div class="modal">
-        <h3>添加借阅</h3>
-        <form @submit.prevent="saveBorrow">
-          <div class="form-group">
-            <label>选择图书</label>
-            <select v-model="formData.bookId" required>
-              <option value="">请选择图书</option>
-              <option v-for="book in availableBooks" :key="book.id" :value="book.id">
-                {{ book.title }} (库存: {{ book.available }})
-              </option>
-            </select>
-          </div>
-          <!-- 管理员可以选择用户，普通用户只能为自己借书 -->
-          <div v-if="isAdmin" class="form-group">
-            <label>选择用户</label>
-            <select v-model="formData.userId" required>
-              <option value="">请选择用户</option>
-              <option v-for="user in users" :key="user.id" :value="user.id">
-                {{ user.username }}
-              </option>
-            </select>
-          </div>
-          <div v-else class="form-group">
-            <label>借阅人</label>
-            <div class="readonly-value">当前用户</div>
-          </div>
-          <div class="form-group">
-            <label>借阅日期</label>
-            <input type="date" v-model="formData.borrowDate" required />
-          </div>
-          <div class="form-group">
-            <label>应还日期</label>
-            <input type="date" v-model="formData.dueDate" required />
-          </div>
-          <div class="modal-actions">
-            <button type="button" class="cancel-btn" @click="closeModal">取消</button>
-            <button type="submit" class="submit-btn">保存</button>
-          </div>
-        </form>
+    <transition name="modal-fade">
+      <div v-if="showAddModal" class="modal-overlay" @click.self="closeModal">
+        <div class="modal">
+          <h3>添加借阅</h3>
+          <form @submit.prevent="saveBorrow">
+            <div class="form-group">
+              <label>选择图书</label>
+              <select v-model="formData.bookId" required>
+                <option value="">请选择图书</option>
+                <option v-for="book in availableBooks" :key="book.id" :value="book.id">
+                  {{ book.title }} (库存: {{ book.available }})
+                </option>
+              </select>
+            </div>
+            <!-- 管理员可以选择用户，普通用户只能为自己借书 -->
+            <div v-if="isAdmin" class="form-group">
+              <label>选择用户</label>
+              <select v-model="formData.userId" required>
+                <option value="">请选择用户</option>
+                <option v-for="user in users" :key="user.id" :value="user.id">
+                  {{ user.username }}
+                </option>
+              </select>
+            </div>
+            <div v-else class="form-group">
+              <label>借阅人</label>
+              <div class="readonly-value">当前用户</div>
+            </div>
+            <div class="form-group">
+              <label>借阅日期</label>
+              <input type="date" v-model="formData.borrowDate" required />
+            </div>
+            <div class="form-group">
+              <label>应还日期</label>
+              <input type="date" v-model="formData.dueDate" required />
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="cancel-btn" @click="closeModal">取消</button>
+              <button type="submit" class="submit-btn">保存</button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { Close } from '@element-plus/icons-vue'
 import { getBorrows, getOverdueReminder, addBorrow, returnBorrow, deleteBorrow as apiDeleteBorrow } from '../api/borrow'
 import { getBooks } from '../api/book'
 import { getUsers } from '../api/user'
@@ -139,6 +151,12 @@ const pageTitle = computed(() => (isAdmin.value ? '借阅管理' : '我的借阅
 const currentUserId = computed(() => getCurrentUserId())
 const searchKeyword = ref('')
 const overdueReminder = ref({ overdueCount: 0, records: [] })
+const dismissedReminderSignature = ref('')
+const overdueBannerDismissed = ref(false)
+
+const shouldShowOverdueBanner = computed(() => {
+  return overdueReminder.value.overdueCount > 0 && !overdueBannerDismissed.value
+})
 
 const overdueBannerTitle = computed(() => {
   const n = overdueReminder.value.overdueCount
@@ -146,6 +164,17 @@ const overdueBannerTitle = computed(() => {
     ? `当前共有 ${n} 条逾期未还，请及时督促归还`
     : `您有 ${n} 本书已逾期，请尽快归还`
 })
+
+function buildReminderSignature(reminder) {
+  const records = Array.isArray(reminder?.records) ? reminder.records : []
+  const ids = records.map((r) => `${r.id}-${r.status}-${r.dueDate}`).join('|')
+  return `${reminder?.overdueCount || 0}:${ids}`
+}
+
+function dismissOverdueBanner() {
+  overdueBannerDismissed.value = true
+  dismissedReminderSignature.value = buildReminderSignature(overdueReminder.value)
+}
 
 function canReturn(borrow) {
   const active = borrow.status === 'BORROWED' || borrow.status === 'OVERDUE'
@@ -174,6 +203,14 @@ const loadOverdueReminder = async () => {
   const res = await getOverdueReminder(userId)
   if (res.data?.code === 200 && res.data.data) {
     overdueReminder.value = res.data.data
+    const latestSignature = buildReminderSignature(res.data.data)
+    if (!overdueBannerDismissed.value) {
+      return
+    }
+    if (latestSignature !== dismissedReminderSignature.value) {
+      overdueBannerDismissed.value = false
+      dismissedReminderSignature.value = ''
+    }
   }
 }
 
@@ -278,8 +315,45 @@ onMounted(() => {
   padding: 2px;
 }
 
-.overdue-banner {
+.overdue-banner-wrap {
+  position: relative;
   margin-bottom: 16px;
+}
+
+.overdue-banner {
+  margin-bottom: 0;
+  padding-left: 56px;
+}
+
+.overdue-dismiss-btn {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(230, 162, 60, 0.55);
+  background: rgba(255, 255, 255, 0.9);
+  color: #e6a23c;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: none;
+  transition: all 0.18s ease;
+}
+
+.overdue-dismiss-btn:hover {
+  transform: translateY(-50%);
+  background: rgba(230, 162, 60, 0.1);
+  border-color: rgba(230, 162, 60, 0.85);
+}
+
+.overdue-dismiss-btn :deep(svg) {
+  font-size: 12px;
+  stroke-width: 2.2;
 }
 
 .row-overdue {
@@ -384,7 +458,6 @@ h2 {
 
 .data-table tr:hover {
   background-color: #f6faff;
-  transform: scale(1.002);
 }
 
 .data-table tr:last-child {
@@ -476,12 +549,6 @@ h2 {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 .modal {
@@ -491,18 +558,29 @@ h2 {
   width: 480px;
   max-width: 90%;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  animation: slideUp 0.3s ease;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.22s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .modal,
+.modal-fade-leave-to .modal {
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+}
+
+.modal-fade-enter-to .modal,
+.modal-fade-leave-from .modal {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
 }
 
 .modal h3 {

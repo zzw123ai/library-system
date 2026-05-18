@@ -31,26 +31,36 @@
       </header>
       <main class="content">
         <div v-if="$route.path === '/'" class="welcome-card">
-          <el-alert
-            v-if="overdueReminder.overdueCount > 0"
-            type="error"
-            :closable="false"
-            show-icon
-            class="overdue-alert"
-            :title="overdueAlertTitle"
-          >
-            <template #default>
-              <ul class="overdue-list">
-                <li v-for="item in overdueReminder.records" :key="item.id">
-                  《{{ item.bookTitle }}》— 应还 {{ item.dueDate }}，已逾期 {{ item.overdueDays }} 天
-                  <span v-if="isAdmin">（借阅人：{{ item.username }}）</span>
-                </li>
-              </ul>
-              <el-button type="primary" link @click="goBorrows">
-                {{ isAdmin ? '前往借阅管理归还' : '前往我的借阅归还' }}
-              </el-button>
-            </template>
-          </el-alert>
+          <div v-if="shouldShowOverdueAlert" class="overdue-alert-wrap">
+            <el-alert
+              type="error"
+              :closable="false"
+              show-icon
+              class="overdue-alert"
+              :title="overdueAlertTitle"
+            >
+              <template #icon>
+                <el-icon
+                  class="overdue-alert-icon-btn"
+                  title="关闭提醒"
+                  @click.stop="dismissOverdueAlert"
+                >
+                  <CircleCloseFilled />
+                </el-icon>
+              </template>
+              <template #default>
+                <ul class="overdue-list">
+                  <li v-for="item in overdueReminder.records" :key="item.id">
+                    《{{ item.bookTitle }}》— 应还 {{ item.dueDate }}，已逾期 {{ item.overdueDays }} 天
+                    <span v-if="isAdmin">（借阅人：{{ item.username }}）</span>
+                  </li>
+                </ul>
+                <el-button type="primary" link @click="goBorrows">
+                  {{ isAdmin ? '前往借阅管理归还' : '前往我的借阅归还' }}
+                </el-button>
+              </template>
+            </el-alert>
+          </div>
 
           <h2>欢迎使用图书馆管理系统！</h2>
           <p v-if="isAdmin">
@@ -84,6 +94,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { CircleCloseFilled } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getUsers } from '../api/user'
 import { getBooks } from '../api/book'
@@ -96,6 +107,8 @@ const userCount = ref(0)
 const bookCount = ref(0)
 const borrowCount = ref(0)
 const overdueReminder = ref({ overdueCount: 0, records: [] })
+const dismissedReminderSignature = ref('')
+const overdueAlertDismissed = ref(false)
 
 // 当前用户信息
 const currentUser = ref(null)
@@ -103,6 +116,9 @@ const currentUser = ref(null)
 const isAdmin = computed(() => checkAdmin())
 
 const visibleMenus = computed(() => getVisibleMenus(isAdmin.value))
+const shouldShowOverdueAlert = computed(() => {
+  return overdueReminder.value.overdueCount > 0 && !overdueAlertDismissed.value
+})
 
 const overdueAlertTitle = computed(() => {
   const n = overdueReminder.value.overdueCount
@@ -114,6 +130,17 @@ const overdueAlertTitle = computed(() => {
 
 function goBorrows() {
   router.push('/borrows')
+}
+
+function buildReminderSignature(reminder) {
+  const records = Array.isArray(reminder?.records) ? reminder.records : []
+  const ids = records.map((r) => `${r.id}-${r.status}-${r.dueDate}`).join('|')
+  return `${reminder?.overdueCount || 0}:${ids}`
+}
+
+function dismissOverdueAlert() {
+  overdueAlertDismissed.value = true
+  dismissedReminderSignature.value = buildReminderSignature(overdueReminder.value)
 }
 
 const loadCurrentUser = () => {
@@ -145,6 +172,14 @@ const loadOverdueReminder = async () => {
   const res = await getOverdueReminder(userId)
   if (res.data?.code === 200 && res.data.data) {
     overdueReminder.value = res.data.data
+    const latestSignature = buildReminderSignature(res.data.data)
+    if (!overdueAlertDismissed.value) {
+      return
+    }
+    if (latestSignature !== dismissedReminderSignature.value) {
+      overdueAlertDismissed.value = false
+      dismissedReminderSignature.value = ''
+    }
   }
 }
 
@@ -349,9 +384,23 @@ onMounted(() => {
   line-height: 1.7;
 }
 
-.overdue-alert {
+.overdue-alert-wrap {
+  position: relative;
   margin-bottom: 24px;
+}
+
+.overdue-alert {
+  margin-bottom: 0;
   border-radius: 8px;
+}
+
+.overdue-alert-icon-btn {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.overdue-alert :deep(.el-alert__icon) {
+  pointer-events: auto;
 }
 
 .overdue-list {

@@ -43,6 +43,10 @@
   --font-body: 14px;
   --font-small: 13px;
   --font-caption: 12px;
+  --motion-fast: 0.18s;
+  --motion-base: 0.24s;
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snappy: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 body {
@@ -95,6 +99,10 @@ select {
   border-radius: var(--radius-3) !important;
   font-size: var(--font-small) !important;
   font-weight: 600 !important;
+  transition:
+    transform var(--motion-fast) var(--ease-smooth),
+    box-shadow var(--motion-fast) var(--ease-smooth),
+    filter var(--motion-fast) var(--ease-smooth) !important;
 }
 
 .el-button.is-link,
@@ -104,5 +112,71 @@ select {
   background: transparent !important;
   box-shadow: none !important;
   border: none !important;
+}
+
+.el-button:hover {
+  transform: translateY(-1px);
+}
+
+.el-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+:where(
+  .add-btn,
+  .remove-dup-btn,
+  .edit-btn,
+  .delete-btn,
+  .return-btn,
+  .submit-btn,
+  .cancel-btn,
+  .logout-btn
+) {
+  transition:
+    transform var(--motion-fast) var(--ease-smooth),
+    box-shadow var(--motion-fast) var(--ease-smooth),
+    background-color var(--motion-fast) var(--ease-smooth),
+    filter var(--motion-fast) var(--ease-smooth);
+}
+
+:where(
+  .add-btn,
+  .remove-dup-btn,
+  .edit-btn,
+  .delete-btn,
+  .return-btn,
+  .submit-btn,
+  .logout-btn
+):hover {
+  transform: translateY(-1px);
+  filter: saturate(1.03);
+}
+
+:where(
+  .add-btn,
+  .remove-dup-btn,
+  .edit-btn,
+  .delete-btn,
+  .return-btn,
+  .submit-btn,
+  .cancel-btn,
+  .logout-btn
+):active {
+  transform: translateY(0) scale(0.98);
+}
+
+:where(
+  .add-btn,
+  .remove-dup-btn,
+  .edit-btn,
+  .delete-btn,
+  .return-btn,
+  .submit-btn,
+  .cancel-btn,
+  .logout-btn,
+  .el-button
+):focus-visible {
+  outline: 2px solid rgba(91, 141, 239, 0.42);
+  outline-offset: 2px;
 }
 </style>

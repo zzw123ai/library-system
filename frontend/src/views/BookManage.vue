@@ -49,37 +49,39 @@
     </div>
 
     <!-- 添加/编辑模态框 -->
-    <div v-if="showAddModal" class="modal-overlay" @click.self="closeModal">
-      <div class="modal">
-        <h3>{{ isEdit ? '编辑图书' : '添加图书' }}</h3>
-        <form @submit.prevent="saveBook">
-          <div class="form-group">
-            <label>书名</label>
-            <input type="text" v-model="formData.title" required />
-          </div>
-          <div class="form-group">
-            <label>ISBN</label>
-            <input type="text" v-model="formData.isbn" required />
-          </div>
-          <div class="form-group">
-            <label>作者</label>
-            <input type="text" v-model="formData.author" required />
-          </div>
-          <div class="form-group">
-            <label>出版社</label>
-            <input type="text" v-model="formData.publisher" required />
-          </div>
-          <div class="form-group">
-            <label>库存数量</label>
-            <input type="number" v-model="formData.available" required min="0" />
-          </div>
-          <div class="modal-actions">
-            <button type="button" class="cancel-btn" @click="closeModal">取消</button>
-            <button type="submit" class="submit-btn">保存</button>
-          </div>
-        </form>
+    <transition name="modal-fade">
+      <div v-if="showAddModal" class="modal-overlay" @click.self="closeModal">
+        <div class="modal">
+          <h3>{{ isEdit ? '编辑图书' : '添加图书' }}</h3>
+          <form @submit.prevent="saveBook">
+            <div class="form-group">
+              <label>书名</label>
+              <input type="text" v-model="formData.title" required />
+            </div>
+            <div class="form-group">
+              <label>ISBN</label>
+              <input type="text" v-model="formData.isbn" required />
+            </div>
+            <div class="form-group">
+              <label>作者</label>
+              <input type="text" v-model="formData.author" required />
+            </div>
+            <div class="form-group">
+              <label>出版社</label>
+              <input type="text" v-model="formData.publisher" required />
+            </div>
+            <div class="form-group">
+              <label>库存数量</label>
+              <input type="number" v-model="formData.available" required min="0" />
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="cancel-btn" @click="closeModal">取消</button>
+              <button type="submit" class="submit-btn">保存</button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -349,6 +351,29 @@ onMounted(() => {
   padding: 20px;
   border: 1px solid rgba(99, 102, 241, 0.18);
   box-shadow: 0 20px 44px rgba(15, 23, 42, 0.2);
+}
+
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.22s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .modal,
+.modal-fade-leave-to .modal {
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+}
+
+.modal-fade-enter-to .modal,
+.modal-fade-leave-from .modal {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
 }
 
 .modal h3 {

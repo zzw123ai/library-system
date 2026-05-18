@@ -9,7 +9,7 @@
         v-model="searchKeyword" 
         placeholder="搜索用户名..." 
         class="search-input"
-        @input="loadUsers"
+        @input="loadUsersDebounced"
       />
       <button class="add-btn" @click="showAddModal = true">添加用户</button>
     </div>
@@ -75,6 +75,7 @@
 import { ref, onMounted } from 'vue'
 import { getUsers, addUser, updateUser, deleteUser as apiDeleteUser } from '../api/user'
 import { notifySuccess, notifyError, confirmAction } from '../utils/message.js'
+import { debounce } from '../utils/debounce.js'
 
 const users = ref([])
 const searchKeyword = ref('')
@@ -93,6 +94,8 @@ const loadUsers = async () => {
     users.value = response.data.data
   }
 }
+
+const loadUsersDebounced = debounce(loadUsers, 300)
 
 const addUserHandler = () => {
   isEdit.value = false

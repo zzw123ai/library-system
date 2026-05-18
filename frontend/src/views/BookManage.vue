@@ -9,7 +9,7 @@
         v-model="searchKeyword" 
         placeholder="搜索书名、作者、ISBN 或出版社..." 
         class="search-input"
-        @input="loadBooks"
+        @input="loadBooksDebounced"
       />
       <div>
         <button v-if="isAdmin" class="add-btn" @click="showAddModal = true">添加图书</button>
@@ -90,6 +90,7 @@ import { ref, onMounted, computed } from 'vue'
 import { getBooks, addBook, updateBook, deleteBook as apiDeleteBook, removeDuplicateBooks } from '../api/book'
 import { isAdmin as checkAdmin } from '../utils/auth'
 import { notifySuccess, notifyError, confirmAction } from '../utils/message.js'
+import { debounce } from '../utils/debounce.js'
 
 const books = ref([])
 const isAdmin = computed(() => checkAdmin())
@@ -112,6 +113,8 @@ const loadBooks = async () => {
     books.value = response.data.data
   }
 }
+
+const loadBooksDebounced = debounce(loadBooks, 300)
 
 const addBookHandler = () => {
   isEdit.value = false

@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import Login from '../views/Login.vue'
-import Home from '../views/Home.vue'
 import { isLoggedIn, isAdmin } from '../utils/auth.js'
 import { getPageTitle } from '../config/menu.js'
 
@@ -9,13 +7,13 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: Login,
+    component: () => import('../views/Login.vue'),
     meta: { public: true, title: '登录' },
   },
   {
     path: '/',
     name: 'Home',
-    component: Home,
+    component: () => import('../views/Home.vue'),
     meta: { requiresAuth: true, title: '首页' },
     children: [
       {

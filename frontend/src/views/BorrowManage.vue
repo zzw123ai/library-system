@@ -27,7 +27,7 @@
         v-model="searchKeyword" 
         :placeholder="isAdmin ? '搜索书名或用户名...' : '搜索书名...'" 
         class="search-input"
-        @input="loadBorrows"
+        @input="loadBorrowsDebounced"
       />
       <!-- 所有用户都可以借书 -->
       <button class="add-btn" @click="addBorrowHandler">
@@ -145,6 +145,7 @@ import { getBooks } from '../api/book'
 import { getUsers } from '../api/user'
 import { isAdmin as checkAdmin, getCurrentUserId } from '../utils/auth'
 import { notifySuccess, notifyError, confirmAction } from '../utils/message.js'
+import { debounce } from '../utils/debounce.js'
 
 const borrows = ref([])
 const isAdmin = computed(() => checkAdmin())
@@ -215,6 +216,8 @@ const loadBorrows = async () => {
   }
   await loadOverdueReminder()
 }
+
+const loadBorrowsDebounced = debounce(loadBorrows, 300)
 
 const loadBooksAndUsers = async () => {
   const booksRes = await getBooks()

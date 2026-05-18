@@ -1,6 +1,7 @@
 /** 侧栏菜单配置：adminOnly 项仅管理员可见；读者使用 readerLabel */
 export const MENU_ITEMS = [
   { path: '/', icon: '🏠', label: '首页' },
+  { path: '/profile', icon: '👤', label: '个人中心' },
   { path: '/users', icon: '👥', label: '用户管理', adminOnly: true },
   {
     path: '/books',
@@ -33,6 +34,6 @@ export function getVisibleMenus(admin) {
  */
 export function getPageTitle(path, admin) {
   const item = MENU_ITEMS.find((m) => m.path === path)
-  if (!item) return '首页'
+  if (!item) return path === '/profile' ? '个人中心' : '首页'
   return admin ? item.label : item.readerLabel || item.label
 }

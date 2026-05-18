@@ -10,17 +10,18 @@
           :key="item.path"
           :to="item.path"
           class="menu-item"
-          :class="{ active: $route.path === item.path }"
+          :class="{ active: isMenuActive(item.path) }"
         >
           <span class="icon">{{ item.icon }}</span>
           <span>{{ item.label }}</span>
         </router-link>
       </nav>
       <!-- 当前用户信息 -->
-      <div class="user-info">
+      <router-link to="/profile" class="user-info user-info-link">
         <span class="username">{{ currentUser?.username }}</span>
         <span class="role">{{ isAdmin ? '管理员' : '读者' }}</span>
-      </div>
+        <span class="profile-hint">个人中心 →</span>
+      </router-link>
     </div>
     <div class="main-content">
       <header class="header">
@@ -93,7 +94,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { CircleCloseFilled } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getUsers } from '../api/user'
@@ -103,6 +104,12 @@ import { getCurrentUser, clearSession, isLoggedIn, isAdmin as checkAdmin, getCur
 import { getVisibleMenus, getPageTitle } from '../config/menu.js'
 
 const router = useRouter()
+const route = useRoute()
+
+function isMenuActive(path) {
+  if (path === '/') return route.path === '/'
+  return route.path === path
+}
 const userCount = ref(0)
 const bookCount = ref(0)
 const borrowCount = ref(0)
@@ -308,6 +315,26 @@ onMounted(() => {
   border-radius: 8px;
   background: rgba(91, 141, 239, 0.12);
   color: #355ea8;
+}
+
+.user-info-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.user-info-link:hover {
+  background: rgba(91, 141, 239, 0.1);
+  transform: translateY(-1px);
+}
+
+.profile-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #5b8def;
+  font-weight: 500;
 }
 
 .main-content {

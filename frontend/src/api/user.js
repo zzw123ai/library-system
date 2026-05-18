@@ -8,6 +8,13 @@ export function login(payload) {
   })
 }
 
+export function getMe() {
+  return request({
+    url: '/api/user/me',
+    method: 'get',
+  })
+}
+
 export function getUsers(keyword) {
   return request({
     url: keyword ? '/api/user/search' : '/api/user/list',

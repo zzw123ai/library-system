@@ -36,6 +36,12 @@ const routes = [
         component: () => import('../views/BorrowManage.vue'),
         meta: { requiresAuth: true, title: '借阅管理', readerTitle: '我的借阅' },
       },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('../views/Profile.vue'),
+        meta: { requiresAuth: true, title: '个人中心' },
+      },
     ],
   },
 ]

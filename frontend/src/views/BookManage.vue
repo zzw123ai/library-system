@@ -12,7 +12,7 @@
         @input="loadBooksDebounced"
       />
       <div>
-        <button v-if="isAdmin" class="add-btn" @click="showAddModal = true">添加图书</button>
+        <button v-if="isAdmin" class="add-btn" @click="addBookHandler">添加图书</button>
         <button v-if="isAdmin" class="remove-dup-btn" @click="handleRemoveDuplicates">删除重复书本</button>
       </div>
     </div>

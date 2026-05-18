@@ -128,6 +128,12 @@ public class UserController {
         if (!authUser.isAdmin()) {
             user.setRole(existingUser.getRole());
         }
+        // 密码留空表示不修改，避免编辑用户时清空密码导致无法登录
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            user.setPassword(existingUser.getPassword());
+        } else {
+            user.setPassword(PasswordUtil.encode(user.getPassword()));
+        }
         userService.update(user);
         return Result.success("更新成功");
     }

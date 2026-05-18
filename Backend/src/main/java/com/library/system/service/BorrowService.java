@@ -12,6 +12,7 @@ import com.library.system.common.OverdueReminderVO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.library.system.entity.Book;
 import com.library.system.entity.BorrowRecord;
@@ -172,13 +173,12 @@ public class BorrowService {
         }
     }
 
+    @Transactional
     public void borrowBook(Integer userId, Integer bookId, String dueDate) {
-        Book book = bookMapper.findById(bookId);
-        if (book == null || book.getAvailable() == null || book.getAvailable() <= 0) {
+        int decreased = bookMapper.decreaseAvailable(bookId);
+        if (decreased <= 0) {
             throw new IllegalStateException("图书不可借");
         }
-        book.setAvailable(book.getAvailable() - 1);
-        bookMapper.update(book);
 
         BorrowRecord record = new BorrowRecord();
         record.setUserId(userId);
@@ -189,6 +189,7 @@ public class BorrowService {
         borrowMapper.insert(record);
     }
 
+    @Transactional
     public void returnBook(Integer recordId) {
         BorrowRecord record = borrowMapper.findById(recordId);
         if (record == null) {

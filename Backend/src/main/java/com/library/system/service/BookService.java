@@ -51,6 +51,15 @@ public class BookService {
     }
 
     public void insert(Book book) {
+        if (book.getAvailable() == null && book.getQuantity() != null) {
+            book.setAvailable(book.getQuantity());
+        }
+        if (book.getQuantity() == null) {
+            book.setQuantity(book.getAvailable() != null ? book.getAvailable() : 1);
+        }
+        if (book.getAvailable() == null) {
+            book.setAvailable(book.getQuantity());
+        }
         bookMapper.insert(book);
     }
 

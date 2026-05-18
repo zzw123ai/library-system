@@ -1,5 +1,8 @@
 package com.library.system.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -149,6 +152,29 @@ class UserControllerTest {
         updatedUser.setPassword("admin123");
         updatedUser.setRole("1");
         userService.update(updatedUser);
+    }
+
+    @Test
+    @Order(85)
+    void testUpdateUserPreservesPasswordWhenEmpty() throws Exception {
+        User before = userService.findByUsername("user1");
+        assertNotNull(before);
+
+        User user = new User();
+        user.setId(before.getId());
+        user.setUsername(before.getUsername());
+        user.setPassword("");
+        user.setRole(before.getRole());
+
+        mockMvc.perform(put("/api/user/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
+
+        User after = userService.findById(before.getId());
+        assertEquals(before.getPassword(), after.getPassword());
+        assertNotNull(userService.login("user1", "user123"));
     }
 
     @Test

@@ -11,7 +11,7 @@
         class="search-input"
         @input="loadUsersDebounced"
       />
-      <button class="add-btn" @click="showAddModal = true">添加用户</button>
+      <button class="add-btn" @click="addUserHandler">添加用户</button>
     </div>
 
     <!-- 用户列表 -->
@@ -97,7 +97,7 @@ const loadUsers = async () => {
 
 const loadUsersDebounced = debounce(loadUsers, 300)
 
-const addUserHandler = () => {
+function addUserHandler() {
   isEdit.value = false
   formData.value = {
     id: null,

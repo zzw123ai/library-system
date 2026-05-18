@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.library.system.common.OverdueReminderVO;
 import com.library.system.common.Result;
 import com.library.system.entity.BorrowRecord;
 import com.library.system.service.BorrowService;
@@ -25,6 +26,16 @@ public class BorrowController {
     public Result<List<BorrowRecord>> findAll() {
         List<BorrowRecord> records = borrowService.findAll();
         return Result.success(records);
+    }
+
+    /**
+     * 逾期提醒：先刷新逾期状态，再返回逾期列表与数量。
+     * @param userId 可选；传入则只查该读者的逾期记录，不传则返回全部（管理员用）
+     */
+    @GetMapping("/overdue/reminder")
+    public Result<OverdueReminderVO> overdueReminder(@RequestParam(required = false) Integer userId) {
+        OverdueReminderVO vo = borrowService.getOverdueReminder(userId);
+        return Result.success(vo);
     }
 
     @GetMapping("/user/{userId}")

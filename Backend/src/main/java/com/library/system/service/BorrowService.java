@@ -1,8 +1,13 @@
 package com.library.system.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+import com.library.system.common.OverdueReminderVO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,17 +31,84 @@ public class BorrowService {
     private UserMapper userMapper;
 
     private final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public List<BorrowRecord> findAll() {
+        refreshOverdueStatus();
         List<BorrowRecord> records = borrowMapper.findAll();
         enrichRecords(records);
         return records;
     }
 
     public List<BorrowRecord> findByUserId(Integer userId) {
+        refreshOverdueStatus();
         List<BorrowRecord> records = borrowMapper.findByUserId(userId);
         enrichRecords(records);
         return records;
+    }
+
+    /**
+     * 扫描未归还记录：应还日期早于今天则标记为 OVERDUE 并写回数据库。
+     */
+    public void refreshOverdueStatus() {
+        LocalDate today = LocalDate.now();
+        List<BorrowRecord> all = borrowMapper.findAll();
+        for (BorrowRecord record : all) {
+            if (record == null || "RETURNED".equals(record.getStatus())) {
+                continue;
+            }
+            LocalDate due = parseDueDate(record.getDueDate());
+            if (due == null) {
+                continue;
+            }
+            if (today.isAfter(due)) {
+                if (!"OVERDUE".equals(record.getStatus())) {
+                    borrowMapper.updateStatus(record.getId(), "OVERDUE");
+                    record.setStatus("OVERDUE");
+                }
+            } else if ("OVERDUE".equals(record.getStatus())) {
+                // 应还日尚未到但曾被标为逾期时，恢复为借阅中
+                borrowMapper.updateStatus(record.getId(), "BORROWED");
+                record.setStatus("BORROWED");
+            }
+        }
+    }
+
+    public OverdueReminderVO getOverdueReminder(Integer userId) {
+        refreshOverdueStatus();
+        List<BorrowRecord> records;
+        if (userId != null) {
+            records = borrowMapper.findOverdueByUserId(userId);
+        } else {
+            records = borrowMapper.findOverdueAll();
+        }
+        enrichRecords(records);
+        attachOverdueDays(records);
+        return new OverdueReminderVO(records.size(), records);
+    }
+
+    private void attachOverdueDays(List<BorrowRecord> records) {
+        LocalDate today = LocalDate.now();
+        for (BorrowRecord record : records) {
+            LocalDate due = parseDueDate(record.getDueDate());
+            if (due != null && today.isAfter(due)) {
+                record.setOverdueDays((int) ChronoUnit.DAYS.between(due, today));
+            } else {
+                record.setOverdueDays(0);
+            }
+        }
+    }
+
+    private LocalDate parseDueDate(String dueDate) {
+        if (dueDate == null || dueDate.isBlank()) {
+            return null;
+        }
+        String datePart = dueDate.length() >= 10 ? dueDate.substring(0, 10) : dueDate;
+        try {
+            return LocalDate.parse(datePart, dateFmt);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 
     public BorrowRecord findById(Integer id) {
@@ -66,6 +138,15 @@ public class BorrowService {
                 record.setBookTitle(book.getTitle());
             }
         }
+        if ("OVERDUE".equals(record.getStatus())) {
+            LocalDate due = parseDueDate(record.getDueDate());
+            if (due != null) {
+                LocalDate today = LocalDate.now();
+                if (today.isAfter(due)) {
+                    record.setOverdueDays((int) ChronoUnit.DAYS.between(due, today));
+                }
+            }
+        }
     }
 
     public void borrowBook(Integer userId, Integer bookId, String dueDate) {
@@ -93,6 +174,7 @@ public class BorrowService {
         if ("RETURNED".equals(record.getStatus())) {
             return;
         }
+        // 逾期、借阅中均可归还
         Book book = bookMapper.findById(record.getBookId());
         if (book != null) {
             book.setAvailable((book.getAvailable() == null ? 0 : book.getAvailable()) + 1);

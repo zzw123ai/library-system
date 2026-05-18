@@ -223,3 +223,8 @@ INSERT INTO book (title, author, publisher, quantity, available) VALUES
 ('潜意识', '列纳德·蒙洛迪诺', '中国青年出版社', 20, 20),
 ('刻意练习', '安德斯·艾利克森', '机械工业出版社', 19, 19),
 ('终身成长', '卡罗尔·德韦克', '江西人民出版社', 22, 22);
+
+-- 演示逾期提醒：读者 user1 借阅《红楼梦》，应还日已过期（启动后自动标为 OVERDUE）
+INSERT IGNORE INTO borrow_record (user_id, book_id, borrow_date, due_date, return_date, status) VALUES
+(2, 1, '2026-04-01 10:00:00', '2026-04-15', NULL, 'BORROWED');
+UPDATE book SET available = available - 1 WHERE id = 1 AND available > 0;

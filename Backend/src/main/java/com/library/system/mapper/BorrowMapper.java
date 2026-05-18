@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -28,6 +29,15 @@ public interface BorrowMapper {
 
     @Update("UPDATE borrow_record SET return_date = #{returnDate}, status = #{status} WHERE id = #{id}")
     void update(BorrowRecord record);
+
+    @Update("UPDATE borrow_record SET status = #{status} WHERE id = #{id}")
+    void updateStatus(@Param("id") Integer id, @Param("status") String status);
+
+    @Select("SELECT * FROM borrow_record WHERE status = 'OVERDUE' ORDER BY due_date")
+    List<BorrowRecord> findOverdueAll();
+
+    @Select("SELECT * FROM borrow_record WHERE status = 'OVERDUE' AND user_id = #{userId} ORDER BY due_date")
+    List<BorrowRecord> findOverdueByUserId(Integer userId);
 
     @Delete("DELETE FROM borrow_record WHERE id = #{id}")
     void delete(Integer id);

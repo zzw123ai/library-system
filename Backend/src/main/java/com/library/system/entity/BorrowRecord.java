@@ -11,6 +11,8 @@ public class BorrowRecord {
 
     private String username;
     private String bookTitle;
+    /** 逾期天数（仅接口返回，非数据库字段） */
+    private Integer overdueDays;
 
     public Integer getId() {
         return id;
@@ -82,5 +84,13 @@ public class BorrowRecord {
 
     public void setBookTitle(String bookTitle) {
         this.bookTitle = bookTitle;
+    }
+
+    public Integer getOverdueDays() {
+        return overdueDays;
+    }
+
+    public void setOverdueDays(Integer overdueDays) {
+        this.overdueDays = overdueDays;
     }
 }

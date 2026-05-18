@@ -1,5 +1,7 @@
 C:\Users\zhangdong\Desktop\library-system\Backend\src\test\java\com\library\system\controller\BookControllerTest.java
 C:\Users\zhangdong\Desktop\library-system\Backend\src\test\java\com\library\system\service\BorrowServiceTest.java
+C:\Users\zhangdong\Desktop\library-system\Backend\src\test\java\com\library\system\config\TestSecurityConfig.java
+C:\Users\zhangdong\Desktop\library-system\Backend\src\test\java\com\library\system\config\TestAuthFilter.java
 C:\Users\zhangdong\Desktop\library-system\Backend\src\test\java\com\library\system\service\BookServiceTest.java
 C:\Users\zhangdong\Desktop\library-system\Backend\src\test\java\com\library\system\service\UserServiceTest.java
 C:\Users\zhangdong\Desktop\library-system\Backend\src\test\java\com\library\system\LibrarySystemApplicationTests.java

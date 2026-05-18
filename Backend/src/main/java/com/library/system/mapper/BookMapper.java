@@ -31,6 +31,12 @@ public interface BookMapper {
             "</script>")
     List<Book> search(@Param("title") String title, @Param("author") String author, @Param("isbn") String isbn);
 
+    @Select("SELECT * FROM book WHERE title LIKE CONCAT('%', #{keyword}, '%') " +
+            "OR author LIKE CONCAT('%', #{keyword}, '%') " +
+            "OR isbn LIKE CONCAT('%', #{keyword}, '%') " +
+            "OR publisher LIKE CONCAT('%', #{keyword}, '%')")
+    List<Book> searchByKeyword(@Param("keyword") String keyword);
+
     @Select("SELECT * FROM book WHERE available > 0")
     List<Book> findAvailable();
 

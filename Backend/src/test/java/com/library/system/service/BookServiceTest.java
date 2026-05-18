@@ -61,6 +61,14 @@ class BookServiceTest {
     }
 
     @Test
+    @Order(55)
+    void testSearchByKeyword() {
+        assertNotNull(bookService.searchByKeyword("Java"));
+        assertNotNull(bookService.searchByKeyword(""));
+        assertNotNull(bookService.searchByKeyword(null));
+    }
+
+    @Test
     @Order(6)
     void testFindAvailable() {
         assertNotNull(bookService.findAvailable());

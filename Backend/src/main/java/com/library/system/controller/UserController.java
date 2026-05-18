@@ -50,6 +50,16 @@ public class UserController {
         }
     }
 
+    @PostMapping("/logout")
+    public Result<String> logout(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            String token = authorization.substring("Bearer ".length()).trim();
+            authTokenService.revokeToken(token);
+        }
+        return Result.success("已退出登录");
+    }
+
     @GetMapping("/me")
     public Result<Map<String, Object>> me(HttpServletRequest request) {
         AuthUser authUser = currentUser(request);

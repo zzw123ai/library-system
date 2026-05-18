@@ -33,10 +33,16 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public Result<List<Book>> search(@RequestParam(required = false) String title,
+    public Result<List<Book>> search(@RequestParam(required = false) String keyword,
+                                     @RequestParam(required = false) String title,
                                      @RequestParam(required = false) String author,
                                      @RequestParam(required = false) String isbn) {
-        List<Book> books = bookService.search(title, author, isbn);
+        List<Book> books;
+        if (keyword != null && !keyword.isBlank()) {
+            books = bookService.searchByKeyword(keyword);
+        } else {
+            books = bookService.search(title, author, isbn);
+        }
         return Result.success(books);
     }
 

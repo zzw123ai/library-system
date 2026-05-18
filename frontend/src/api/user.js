@@ -15,6 +15,13 @@ export function getMe() {
   })
 }
 
+export function logout() {
+  return request({
+    url: '/api/user/logout',
+    method: 'post',
+  })
+}
+
 export function getUsers(keyword) {
   return request({
     url: keyword ? '/api/user/search' : '/api/user/list',

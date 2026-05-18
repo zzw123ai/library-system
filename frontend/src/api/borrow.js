@@ -1,9 +1,11 @@
 import request from '../utils/request.js'
 
 export function getBorrows(keyword) {
+  const trimmed = typeof keyword === 'string' ? keyword.trim() : ''
   return request({
     url: '/api/borrow/list',
     method: 'get',
+    params: trimmed ? { keyword: trimmed } : {},
   })
 }
 

@@ -7,7 +7,7 @@
       <input 
         type="text" 
         v-model="searchKeyword" 
-        placeholder="搜索书名或ISBN..." 
+        placeholder="搜索书名、作者、ISBN 或出版社..." 
         class="search-input"
         @input="loadBooks"
       />
@@ -89,6 +89,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { getBooks, addBook, updateBook, deleteBook as apiDeleteBook, removeDuplicateBooks } from '../api/book'
 import { isAdmin as checkAdmin } from '../utils/auth'
+import { notifySuccess, notifyError, confirmAction } from '../utils/message.js'
 
 const books = ref([])
 const isAdmin = computed(() => checkAdmin())
@@ -147,39 +148,42 @@ const saveBook = async () => {
   }
   
   if (response.data && response.data.code === 200) {
-    alert(response.data.message)
+    notifySuccess(response.data.message)
     closeModal()
     loadBooks()
   } else {
-    alert(response.data?.message || '操作失败')
+    notifyError(response.data?.message || '操作失败')
   }
 }
 
 const deleteBook = async (id) => {
-  if (confirm('确定要删除该图书吗？')) {
-    const response = await apiDeleteBook(id)
-    if (response.data && response.data.code === 200) {
-      alert(response.data.message)
-      loadBooks()
-    } else {
-      alert(response.data?.message || '删除失败')
-    }
+  const ok = await confirmAction('确定要删除该图书吗？', '删除图书')
+  if (!ok) return
+  const response = await apiDeleteBook(id)
+  if (response.data && response.data.code === 200) {
+    notifySuccess(response.data.message)
+    loadBooks()
+  } else {
+    notifyError(response.data?.message || '删除失败')
   }
 }
 
 const handleRemoveDuplicates = async () => {
-  if (confirm('确定要删除所有重复的图书吗？系统将保留每组重复书籍中ID最小的那本。')) {
-    try {
-      const response = await removeDuplicateBooks()
-      if (response.data && response.data.code === 200) {
-        alert(response.data.data || response.data.message)
-        loadBooks()
-      } else {
-        alert(response.data?.message || '删除失败')
-      }
-    } catch (error) {
-      alert('删除重复书籍时出错')
+  const ok = await confirmAction(
+    '确定要删除所有重复的图书吗？系统将保留每组重复书籍中 ID 最小的那本。',
+    '删除重复书本'
+  )
+  if (!ok) return
+  try {
+    const response = await removeDuplicateBooks()
+    if (response.data && response.data.code === 200) {
+      notifySuccess(response.data.data || response.data.message)
+      loadBooks()
+    } else {
+      notifyError(response.data?.message || '删除失败')
     }
+  } catch {
+    notifyError('删除重复书籍时出错')
   }
 }
 

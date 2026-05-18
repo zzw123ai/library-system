@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.library.system.common.OverdueReminderVO;
 
@@ -45,6 +46,28 @@ public class BorrowService {
         List<BorrowRecord> records = borrowMapper.findByUserId(userId);
         enrichRecords(records);
         return records;
+    }
+
+    /**
+     * 按角色返回借阅列表，并按书名、用户名模糊筛选（keyword 为空则不过滤）。
+     */
+    public List<BorrowRecord> listForCurrentUser(boolean admin, Integer userId, String keyword) {
+        List<BorrowRecord> records = admin ? findAll() : findByUserId(userId);
+        return filterByKeyword(records, keyword);
+    }
+
+    private List<BorrowRecord> filterByKeyword(List<BorrowRecord> records, String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return records;
+        }
+        String kw = keyword.trim().toLowerCase();
+        return records.stream()
+                .filter(r -> fieldContains(r.getBookTitle(), kw) || fieldContains(r.getUsername(), kw))
+                .collect(Collectors.toList());
+    }
+
+    private boolean fieldContains(String value, String kw) {
+        return value != null && value.toLowerCase().contains(kw);
     }
 
     /**

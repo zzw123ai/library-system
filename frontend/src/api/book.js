@@ -1,10 +1,11 @@
 import request from '../utils/request.js'
 
 export function getBooks(keyword) {
+  const trimmed = typeof keyword === 'string' ? keyword.trim() : ''
   return request({
-    url: keyword ? '/api/book/search' : '/api/book/list',
+    url: trimmed ? '/api/book/search' : '/api/book/list',
     method: 'get',
-    params: keyword ? { title: keyword } : {},
+    params: trimmed ? { keyword: trimmed } : {},
   })
 }
 

@@ -29,6 +29,14 @@ public class BookService {
         return bookMapper.search(title, author, isbn);
     }
 
+    /** 单关键词模糊匹配书名、作者、ISBN、出版社（OR） */
+    public List<Book> searchByKeyword(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return findAll();
+        }
+        return bookMapper.searchByKeyword(keyword.trim());
+    }
+
     public List<Book> findAvailable() {
         return bookMapper.findAvailable();
     }

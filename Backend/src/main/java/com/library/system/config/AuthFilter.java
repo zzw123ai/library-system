@@ -8,28 +8,30 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
-@Component
-@Profile("!test")
+/**
+ * Bearer Token 鉴权：校验 token、写入请求属性与 Spring Security 上下文。
+ * 仅通过 {@link SecurityConfig} 注册到过滤器链，避免与 Servlet 容器重复注册。
+ */
 public class AuthFilter extends OncePerRequestFilter {
     public static final String AUTH_USER_ATTR = "AUTH_USER";
 
     private final AuthTokenService authTokenService;
     private final ObjectMapper objectMapper;
+    private final boolean authEnabled;
 
-    @Value("${app.auth.enabled:true}")
-    private boolean authEnabled;
-
-    public AuthFilter(AuthTokenService authTokenService, ObjectMapper objectMapper) {
+    public AuthFilter(AuthTokenService authTokenService, ObjectMapper objectMapper, boolean authEnabled) {
         this.authTokenService = authTokenService;
         this.objectMapper = objectMapper;
+        this.authEnabled = authEnabled;
     }
 
     @Override
@@ -61,7 +63,18 @@ public class AuthFilter extends OncePerRequestFilter {
         }
 
         request.setAttribute(AUTH_USER_ATTR, user);
-        filterChain.doFilter(request, response);
+        List<SimpleGrantedAuthority> authorities = user.isAdmin()
+                ? List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                : List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(user, null, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        try {
+            filterChain.doFilter(request, response);
+        } finally {
+            SecurityContextHolder.clearContext();
+        }
     }
 
     private void writeUnauthorized(HttpServletResponse response, String message) throws IOException {

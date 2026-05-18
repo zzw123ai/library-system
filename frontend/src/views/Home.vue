@@ -101,6 +101,7 @@ import { getUsers } from '../api/user'
 import { getBooks } from '../api/book'
 import { getBorrows, getOverdueReminder } from '../api/borrow'
 import { getCurrentUser, clearSession, isLoggedIn, isAdmin as checkAdmin, getCurrentUserId } from '../utils/auth.js'
+import { logout as apiLogout } from '../api/user.js'
 import { getVisibleMenus, getPageTitle } from '../config/menu.js'
 
 const router = useRouter()
@@ -167,6 +168,11 @@ async function handleLogout() {
     })
   } catch {
     return
+  }
+  try {
+    await apiLogout()
+  } catch {
+    // 网络异常时仍清除本地会话
   }
   clearSession()
   currentUser.value = null

@@ -74,6 +74,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getUsers, addUser, updateUser, deleteUser as apiDeleteUser } from '../api/user'
+import { notifySuccess, notifyError, confirmAction } from '../utils/message.js'
 
 const users = ref([])
 const searchKeyword = ref('')
@@ -124,23 +125,23 @@ const saveUser = async () => {
   }
   
   if (response.data && response.data.code === 200) {
-    alert(response.data.message)
+    notifySuccess(response.data.message)
     closeModal()
     loadUsers()
   } else {
-    alert(response.data?.message || '操作失败')
+    notifyError(response.data?.message || '操作失败')
   }
 }
 
 const deleteUser = async (id) => {
-  if (confirm('确定要删除该用户吗？')) {
-    const response = await apiDeleteUser(id)
-    if (response.data && response.data.code === 200) {
-      alert(response.data.message)
-      loadUsers()
-    } else {
-      alert(response.data?.message || '删除失败')
-    }
+  const ok = await confirmAction('确定要删除该用户吗？', '删除用户')
+  if (!ok) return
+  const response = await apiDeleteUser(id)
+  if (response.data && response.data.code === 200) {
+    notifySuccess(response.data.message)
+    loadUsers()
+  } else {
+    notifyError(response.data?.message || '删除失败')
   }
 }
 

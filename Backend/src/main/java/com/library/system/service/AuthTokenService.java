@@ -38,5 +38,12 @@ public class AuthTokenService {
         return session.user;
     }
 
+    /** 登出时吊销 token，使服务端会话立即失效 */
+    public void revokeToken(String token) {
+        if (token != null && !token.isBlank()) {
+            tokenStore.remove(token);
+        }
+    }
+
     private record TokenSession(AuthUser user, long expireAtEpochSecond) {}
 }

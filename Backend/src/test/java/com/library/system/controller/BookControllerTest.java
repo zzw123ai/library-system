@@ -86,6 +86,10 @@ class BookControllerTest {
         mockMvc.perform(get("/api/book/search"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200));
+
+        mockMvc.perform(get("/api/book/search").param("keyword", "Java"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
     }
 
     @Test

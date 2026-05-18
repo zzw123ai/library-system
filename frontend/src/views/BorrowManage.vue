@@ -53,7 +53,7 @@
         </thead>
         <tbody>
           <tr
-            v-for="borrow in filteredBorrows"
+            v-for="borrow in borrows"
             :key="borrow.id"
             :class="{ 'row-overdue': borrow.status === 'OVERDUE' }"
           >
@@ -144,6 +144,7 @@ import { getBorrows, getOverdueReminder, addBorrow, returnBorrow, deleteBorrow a
 import { getBooks } from '../api/book'
 import { getUsers } from '../api/user'
 import { isAdmin as checkAdmin, getCurrentUserId } from '../utils/auth'
+import { notifySuccess, notifyError, confirmAction } from '../utils/message.js'
 
 const borrows = ref([])
 const isAdmin = computed(() => checkAdmin())
@@ -181,13 +182,6 @@ function canReturn(borrow) {
   return active && (isAdmin.value || borrow.userId === currentUserId.value)
 }
 
-// 过滤借阅记录：管理员看到所有，普通用户只看到自己的
-const filteredBorrows = computed(() => {
-  if (isAdmin.value) {
-    return borrows.value
-  }
-  return borrows.value.filter(borrow => borrow.userId === currentUserId.value)
-})
 const showAddModal = ref(false)
 const availableBooks = ref([])
 const users = ref([])
@@ -250,35 +244,35 @@ const addBorrowHandler = async () => {
 const saveBorrow = async () => {
   const response = await addBorrow(formData.value)
   if (response.data && response.data.code === 200) {
-    alert(response.data.message)
+    notifySuccess(response.data.message)
     closeModal()
     loadBorrows()
   } else {
-    alert(response.data?.message || '操作失败')
+    notifyError(response.data?.message || '操作失败')
   }
 }
 
 const returnBook = async (id) => {
-  if (confirm('确定要归还此书吗？')) {
-    const response = await returnBorrow(id)
-    if (response.data && response.data.code === 200) {
-      alert(response.data.message)
-      loadBorrows()
-    } else {
-      alert(response.data?.message || '操作失败')
-    }
+  const ok = await confirmAction('确定要归还此书吗？', '归还图书')
+  if (!ok) return
+  const response = await returnBorrow(id)
+  if (response.data && response.data.code === 200) {
+    notifySuccess(response.data.message)
+    loadBorrows()
+  } else {
+    notifyError(response.data?.message || '操作失败')
   }
 }
 
 const deleteBorrow = async (id) => {
-  if (confirm('确定要删除该借阅记录吗？')) {
-    const response = await apiDeleteBorrow(id)
-    if (response.data && response.data.code === 200) {
-      alert(response.data.message)
-      loadBorrows()
-    } else {
-      alert(response.data?.message || '删除失败')
-    }
+  const ok = await confirmAction('确定要删除该借阅记录吗？', '删除记录')
+  if (!ok) return
+  const response = await apiDeleteBorrow(id)
+  if (response.data && response.data.code === 200) {
+    notifySuccess(response.data.message)
+    loadBorrows()
+  } else {
+    notifyError(response.data?.message || '删除失败')
   }
 }
 

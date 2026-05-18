@@ -26,14 +26,14 @@ public class BorrowController {
     private BorrowService borrowService;
 
     @GetMapping("/list")
-    public Result<List<BorrowRecord>> findAll(HttpServletRequest request) {
+    public Result<List<BorrowRecord>> findAll(@RequestParam(required = false) String keyword,
+                                              HttpServletRequest request) {
         AuthUser user = currentUser(request);
         if (user == null) {
             return Result.unauthorized("请先登录");
         }
-        List<BorrowRecord> records = user.isAdmin()
-                ? borrowService.findAll()
-                : borrowService.findByUserId(user.getId());
+        List<BorrowRecord> records = borrowService.listForCurrentUser(
+                user.isAdmin(), user.getId(), keyword);
         return Result.success(records);
     }
 
